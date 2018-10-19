@@ -73,5 +73,17 @@ class SelectorManager {
     shape.forget('multiSelect')
     this.shapes = this.shapes.filter((item) => item !== shape)
   }
+  selectInvert (shapes) {
+    var selectedShapes = this.shapes
+    var unSelectedShapes = []
+    if (shapes.length > 0) {
+      shapes.forEach(shape => {
+        if (selectedShapes.indexOf(shape) < 0) {
+          unSelectedShapes.push(shape)
+        }
+      })
+    }
+    this.multiSelect(unSelectedShapes)
+  }
 }
 export default SelectorManager

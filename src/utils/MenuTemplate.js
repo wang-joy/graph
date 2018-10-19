@@ -77,6 +77,24 @@ export var template = [
     ]
   },
   {
-    label: '选择(Z)'
+    label: '选择(Z)',
+    submenu: [
+      {
+        label: '全选',
+        accelerator: 'CmdOrCtrl+A',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('selectAll')
+        }
+      },
+      {
+        label: '反选',
+        accelerator: 'CmdOrCtrl+E',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('selectInvert')
+        }
+      }
+    ]
   }
 ]

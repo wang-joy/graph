@@ -169,6 +169,24 @@ export default {
       if (currentSvg) {
         copyManager.paste(currentSvg)
       }
+    },
+    selectAll () {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let shapeManager = currentSvg.shapeManager
+        let selectorManager = currentSvg.selectorManager
+        let shapes = shapeManager.getShapes()
+        selectorManager.multiSelect(shapes)
+      }
+    },
+    selectInvert () {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let shapeManager = currentSvg.shapeManager
+        let selectorManager = currentSvg.selectorManager
+        let shapes = shapeManager.getShapes()
+        selectorManager.selectInvert(shapes)
+      }
     }
   },
   mounted () {
@@ -181,6 +199,8 @@ export default {
     this.$electron.ipcRenderer.on('cut', that.cut)
     this.$electron.ipcRenderer.on('copy', that.copy)
     this.$electron.ipcRenderer.on('paste', that.paste)
+    this.$electron.ipcRenderer.on('selectAll', that.selectAll)
+    this.$electron.ipcRenderer.on('selectInvert', that.selectInvert)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }
