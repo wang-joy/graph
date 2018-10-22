@@ -187,6 +187,16 @@ export default {
         let shapes = shapeManager.getShapes()
         selectorManager.selectInvert(shapes)
       }
+    },
+    rotate (evt, degree) {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        shapes.forEach(shape => {
+          shape.transform({rotation: degree, relative: true})
+        })
+      }
     }
   },
   mounted () {
@@ -201,6 +211,7 @@ export default {
     this.$electron.ipcRenderer.on('paste', that.paste)
     this.$electron.ipcRenderer.on('selectAll', that.selectAll)
     this.$electron.ipcRenderer.on('selectInvert', that.selectInvert)
+    this.$electron.ipcRenderer.on('rotate', that.rotate)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }

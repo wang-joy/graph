@@ -85,5 +85,8 @@ class SelectorManager {
     }
     this.multiSelect(unSelectedShapes)
   }
+  getSelectedShapes () {
+    return this.shapes
+  }
 }
 export default SelectorManager

@@ -73,6 +73,40 @@ export var template = [
           let webContents = window.webContents
           webContents.send('paste')
         }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: '顺时针旋转90度',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('rotate', 90)
+        }
+      },
+      {
+        label: '顺时针旋转180度',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('rotate', 180)
+        }
+      },
+      {
+        label: '逆时针旋转90度',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('rotate', -90)
+        }
+      },
+      {
+        label: '逆时针旋转180度',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('rotate', -180)
+        }
+      },
+      {
+        type: 'separator'
       }
     ]
   },
