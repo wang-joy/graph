@@ -107,6 +107,20 @@ export var template = [
       },
       {
         type: 'separator'
+      },
+      {
+        label: '水平翻转',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('flipX')
+        }
+      },
+      {
+        label: '垂直翻转',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('flipY')
+        }
       }
     ]
   },

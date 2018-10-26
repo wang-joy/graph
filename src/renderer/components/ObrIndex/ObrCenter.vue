@@ -15,6 +15,7 @@ import 'svg.resize.js'
 import svgManager from '@/svg/SvgManager'
 import shapeEvts from '@/svg/shape/ShapeEvents'
 import copyManager from '@/svg/copyManager'
+import shapeUtils from '@/svg/shape/utils'
 import ObrPane from './ObrCenter/ObrPane'
 import {mapState} from 'vuex'
 import electronutil from '../../../utils/electronutil'
@@ -197,6 +198,26 @@ export default {
           shape.transform({rotation: degree, relative: true})
         })
       }
+    },
+    flipX () {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        shapes.forEach(shape => {
+          shapeUtils.flipX(shape)
+        })
+      }
+    },
+    flipY () {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        shapes.forEach(shape => {
+          shapeUtils.flipY(shape)
+        })
+      }
     }
   },
   mounted () {
@@ -212,6 +233,8 @@ export default {
     this.$electron.ipcRenderer.on('selectAll', that.selectAll)
     this.$electron.ipcRenderer.on('selectInvert', that.selectInvert)
     this.$electron.ipcRenderer.on('rotate', that.rotate)
+    this.$electron.ipcRenderer.on('flipX', that.flipX)
+    this.$electron.ipcRenderer.on('flipY', that.flipY)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }

@@ -36,5 +36,58 @@ export default {
       if (shape.hasOwnProperty(attr)) copy[attr] = this.clone(shape[attr])
     }
     return copy
+  },
+  flipX (shape) {
+    var rotation = shape.transform('rotation')
+    var box = this.getBox(shape)
+    var cx = box.cx
+    var cy = box.cy
+    var m = new SVG.Matrix()
+    var _flipX = shape.remember('_flipX')
+    var _flipY = shape.remember('_flipY')
+    if (!_flipX) {
+      if (_flipY) {
+        m = m.scale(-1, -1, cx, cy).rotate(180 - rotation, cx, cy)
+        shape.transform(m)
+      } else {
+        m = m.scale(-1, 1, cx, 0)
+        shape.transform(m).rotate(rotation, cx, cy)
+      }
+      shape.remember('_flipX', true)
+    } else {
+      if (_flipY) {
+        m = m.scale(1, -1, 0, cy).rotate(180 + rotation, cx, cy)
+        shape.transform(m)
+      } else {
+        shape.transform(m).rotate(-rotation, cx, cy)
+      }
+      shape.forget('_flipX')
+    }
+  },
+  flipY (shape) {
+    var rotation = shape.transform('rotation')
+    var m = new SVG.Matrix()
+    var box = this.getBox(shape)
+    var cx = box.cx
+    var cy = box.cy
+    var _flipX = shape.remember('_flipX')
+    var _flipY = shape.remember('_flipY')
+    if (!_flipY) {
+      if (_flipX) {
+        m = m.scale(-1, -1, cx, cy).rotate(-rotation, cx, cy)
+      } else {
+        m = m.scale(1, -1, 0, cx).rotate(rotation, cy, cx)
+      }
+      shape.transform(m)
+      shape.remember('_flipY', true)
+    } else {
+      if (_flipX) {
+        m = m.scale(-1, 1, cx, 0).rotate(180 + rotation, cx, cy)
+      } else {
+        m = m.rotate(180 - rotation, cx, cy)
+      }
+      shape.transform(m)
+      shape.forget('_flipY')
+    }
   }
 }
