@@ -89,5 +89,67 @@ export default {
       shape.transform(m)
       shape.forget('_flipY')
     }
+  },
+  justify (shapes, type, draw) {
+    var minAndMaxPoint = this.getMinAndMaxPoint(shapes, draw)
+    shapes.forEach(shape => {
+      var p = this.getMovePoint(shape, type, minAndMaxPoint, draw)
+      shape.move(p.x, p.y)
+    })
+  },
+  getMinAndMaxPoint (shapes, draw) {
+    var minX, minY, maxX, maxY
+    shapes.forEach(shape => {
+      var box = shape.rbox()
+      var p1 = draw.point(box.x, box.y)
+      var p2 = draw.point(box.x2, box.y2)
+      if (typeof minX === 'undefined') {
+        minX = p1.x
+        minY = p1.y
+        maxX = p2.x
+        maxY = p2.y
+      } else {
+        if (minX > p1.x) {
+          minX = p1.x
+        }
+        if (maxX < p2.x) {
+          maxX = p2.x
+        }
+        if (minY > p1.y) {
+          minY = p1.y
+        }
+        if (maxY < p2.y) {
+          maxY = p2.y
+        }
+      }
+    })
+    return {minX: minX, minY: minY, maxX: maxX, maxY: maxY}
+  },
+  getMovePoint (shape, type, minAndMaxPoint, draw) {
+    var bbox = shape.bbox()
+    var rbox = shape.rbox()
+    var m = new SVG.Matrix(shape)
+    var p = this.transformPoint(bbox.x, bbox.y, m)
+    var point = null
+    var p1 = null
+    switch (type) {
+      case 'top':
+        p1 = draw.point(rbox.x, rbox.y)
+        point = this.transformPoint(p.x, p.y + minAndMaxPoint.minY - p1.y, m.inverse())
+        break
+      case 'left':
+        p1 = draw.point(rbox.x, rbox.y)
+        point = this.transformPoint(p.x + minAndMaxPoint.minX - p1.x, p.y, m.inverse())
+        break
+      case 'right':
+        p1 = draw.point(rbox.x2, rbox.y2)
+        point = this.transformPoint(p.x + minAndMaxPoint.maxX - p1.x, p.y, m.inverse())
+        break
+      case 'bottom':
+        p1 = draw.point(rbox.x2, rbox.y2)
+        point = this.transformPoint(p.x, p.y + minAndMaxPoint.maxY - p1.y, m.inverse())
+        break
+    }
+    return point
   }
 }

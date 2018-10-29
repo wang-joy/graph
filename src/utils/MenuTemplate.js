@@ -144,5 +144,38 @@ export var template = [
         }
       }
     ]
+  },
+  {
+    label: '排序(Z)',
+    submenu: [
+      {
+        label: '左对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'left')
+        }
+      },
+      {
+        label: '右对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'right')
+        }
+      },
+      {
+        label: '上对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'top')
+        }
+      },
+      {
+        label: '下对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'bottom')
+        }
+      }
+    ]
   }
 ]

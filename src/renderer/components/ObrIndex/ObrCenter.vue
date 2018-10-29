@@ -218,6 +218,17 @@ export default {
           shapeUtils.flipY(shape)
         })
       }
+    },
+    justify (evts, type) {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        if (shapes.length >= 2) {
+          let draw = currentSvg.draw
+          shapeUtils.justify(shapes, type, draw)
+        }
+      }
     }
   },
   mounted () {
@@ -235,6 +246,7 @@ export default {
     this.$electron.ipcRenderer.on('rotate', that.rotate)
     this.$electron.ipcRenderer.on('flipX', that.flipX)
     this.$electron.ipcRenderer.on('flipY', that.flipY)
+    this.$electron.ipcRenderer.on('justify', that.justify)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }
