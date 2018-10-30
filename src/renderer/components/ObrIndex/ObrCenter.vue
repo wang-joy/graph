@@ -229,6 +229,16 @@ export default {
           shapeUtils.justify(shapes, type, draw)
         }
       }
+    },
+    arrange (evt, type) {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        if (shapes.length === 1) {
+          (shapes[0])[type]()
+        }
+      }
     }
   },
   mounted () {
@@ -247,6 +257,7 @@ export default {
     this.$electron.ipcRenderer.on('flipX', that.flipX)
     this.$electron.ipcRenderer.on('flipY', that.flipY)
     this.$electron.ipcRenderer.on('justify', that.justify)
+    this.$electron.ipcRenderer.on('arrange', that.arrange)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }

@@ -177,6 +177,9 @@ export var template = [
         }
       },
       {
+        type: 'separator'
+      },
+      {
         label: '水平对齐',
         click: function (menuItem, window, event) {
           let webContents = window.webContents
@@ -188,6 +191,37 @@ export var template = [
         click: function (menuItem, window, event) {
           let webContents = window.webContents
           webContents.send('justify', 'vertical')
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: '上移',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('arrange', 'forward')
+        }
+      },
+      {
+        label: '下移',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('arrange', 'backward')
+        }
+      },
+      {
+        label: '置顶',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('arrange', 'front')
+        }
+      },
+      {
+        label: '置底',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('arrange', 'back')
         }
       }
     ]
