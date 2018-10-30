@@ -175,6 +175,20 @@ export var template = [
           let webContents = window.webContents
           webContents.send('justify', 'bottom')
         }
+      },
+      {
+        label: '水平对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'horizontal')
+        }
+      },
+      {
+        label: '垂直对齐',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('justify', 'vertical')
+        }
       }
     ]
   }

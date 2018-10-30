@@ -126,7 +126,7 @@ export default {
     return {minX: minX, minY: minY, maxX: maxX, maxY: maxY}
   },
   getMovePoint (shape, type, minAndMaxPoint, draw) {
-    var bbox = shape.bbox()
+    var bbox = this.getBox(shape)
     var rbox = shape.rbox()
     var m = new SVG.Matrix(shape)
     var p = this.transformPoint(bbox.x, bbox.y, m)
@@ -148,6 +148,14 @@ export default {
       case 'bottom':
         p1 = draw.point(rbox.x2, rbox.y2)
         point = this.transformPoint(p.x, p.y + minAndMaxPoint.maxY - p1.y, m.inverse())
+        break
+      case 'horizontal':
+        p1 = draw.point(rbox.cx, rbox.cy)
+        point = this.transformPoint(p.x, p.y + (minAndMaxPoint.minY + minAndMaxPoint.maxY) / 2 - p1.y, m.inverse())
+        break
+      case 'vertical':
+        p1 = draw.point(rbox.cx, rbox.cy)
+        point = this.transformPoint(p.x + (minAndMaxPoint.minX + minAndMaxPoint.maxX) / 2 - p1.x, p.y, m.inverse())
         break
     }
     return point
