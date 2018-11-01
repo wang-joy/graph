@@ -33,60 +33,103 @@ export default {
   clone (shape) {
     var copy = {}
     for (var attr in shape) {
-      if (shape.hasOwnProperty(attr)) copy[attr] = this.clone(shape[attr])
+      if (shape.hasOwnProperty(attr)) {
+        copy[attr] = this.clone(shape[attr])
+      } else {
+        copy[attr] = shape[attr]
+      }
     }
     return copy
   },
   flipX (shape) {
     var rotation = shape.transform('rotation')
-    var box = this.getBox(shape)
-    var cx = box.cx
-    var cy = box.cy
-    var m = new SVG.Matrix()
     var _flipX = shape.remember('_flipX')
     var _flipY = shape.remember('_flipY')
+    var m = new SVG.Matrix()
+    var box = shape.bbox()
     if (!_flipX) {
-      if (_flipY) {
-        m = m.scale(-1, -1, cx, cy).rotate(180 - rotation, cx, cy)
-        shape.transform(m)
+      if (!_flipY) {
+        m = m.scale(-1, 1)
+        shape.transform({rotation: -rotation}, true)
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y)
+        var box2 = shape.bbox()
+        shape.dx(-2 * box2.cx).rotate(rotation)
       } else {
-        m = m.scale(-1, 1, cx, 0)
-        shape.transform(m).rotate(rotation, cx, cy)
+        m = m.scale(-1, -1)
+        shape.transform({rotation: rotation - 180}, true)
+        rotation = -rotation
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y - box.height)
+        let box2 = shape.bbox()
+        shape.dmove(-2 * box2.cx, -2 * box2.cy).rotate(rotation)
       }
       shape.remember('_flipX', true)
     } else {
-      if (_flipY) {
-        m = m.scale(1, -1, 0, cy).rotate(180 + rotation, cx, cy)
-        shape.transform(m)
+      if (!_flipY) {
+        rotation = -rotation
+        shape.transform({rotation: -rotation}, true)
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x - box.width, p.y).rotate(rotation)
       } else {
-        shape.transform(m).rotate(-rotation, cx, cy)
+        m = m.scale(1, -1)
+        shape.transform({rotation: -rotation}, true)
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y)
+        let box2 = shape.bbox()
+        shape.dy(-2 * box2.cy).rotate(rotation)
       }
       shape.forget('_flipX')
     }
   },
   flipY (shape) {
     var rotation = shape.transform('rotation')
-    var m = new SVG.Matrix()
-    var box = this.getBox(shape)
-    var cx = box.cx
-    var cy = box.cy
     var _flipX = shape.remember('_flipX')
     var _flipY = shape.remember('_flipY')
+    var m = new SVG.Matrix()
+    var box = shape.bbox()
     if (!_flipY) {
-      if (_flipX) {
-        m = m.scale(-1, -1, cx, cy).rotate(-rotation, cx, cy)
+      if (!_flipX) {
+        m = m.scale(1, -1)
+        shape.transform({rotation: -rotation}, true)
+        rotation = 180 + rotation
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y)
+        let box2 = shape.bbox()
+        shape.dy(-2 * box2.cy).rotate(rotation)
       } else {
-        m = m.scale(1, -1, 0, cx).rotate(rotation, cy, cx)
+        m = m.scale(-1, -1)
+        shape.transform({rotation: rotation}, true)
+        rotation = 180 - rotation
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x - box.width, p.y)
+        let box2 = shape.bbox()
+        shape.dmove(-2 * box2.cx, -2 * box2.cy).rotate(rotation)
       }
-      shape.transform(m)
       shape.remember('_flipY', true)
     } else {
-      if (_flipX) {
-        m = m.scale(-1, 1, cx, 0).rotate(180 + rotation, cx, cy)
+      if (!_flipX) {
+        shape.transform({rotation: 180 + rotation}, true)
+        rotation = 180 - rotation
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y - box.height).rotate(rotation)
       } else {
-        m = m.rotate(180 - rotation, cx, cy)
+        m = m.scale(-1, 1)
+        shape.transform({rotation: -rotation}, true)
+        rotation = 180 + rotation
+        let shapeM = new SVG.Matrix(shape)
+        let p = this.transformPoint(box.x, box.y, shapeM)
+        shape.transform(m).move(p.x, p.y)
+        var box2 = shape.bbox()
+        shape.dx(-2 * box2.cx).rotate(rotation)
       }
-      shape.transform(m)
       shape.forget('_flipY')
     }
   },
