@@ -22,10 +22,12 @@ class ShapeManager {
     this.draw.add(shape)
   }
 
-  remove (shape) {
+  remove (shape, flag) {
     var index = this.shapes.indexOf(shape)
     if (index >= 0) {
-      shape.remove()
+      if (!flag) {
+        shape.remove()
+      }
       this.shapes = this.shapes.filter((shape, i) => i !== index)
     }
   }

@@ -1,4 +1,5 @@
 import SVG from 'svg.js'
+import shapeEvts from './ShapeEvents'
 export default {
   isPolyline (shape) {
     return shape && shape.type === 'polyline'
@@ -80,7 +81,7 @@ export default {
         let shapeM = new SVG.Matrix(shape)
         let p = this.transformPoint(box.x, box.y, shapeM)
         shape.transform(m).move(p.x, p.y)
-        let box2 = shape.bbox()
+        let box2 = this.getBox(shape)
         shape.dy(-2 * box2.cy).rotate(rotation)
       }
       shape.forget('_flipX')
@@ -91,7 +92,7 @@ export default {
     var _flipX = shape.remember('_flipX')
     var _flipY = shape.remember('_flipY')
     var m = new SVG.Matrix()
-    var box = shape.bbox()
+    var box = this.getBox(shape)
     if (!_flipY) {
       if (!_flipX) {
         m = m.scale(1, -1)
@@ -100,7 +101,7 @@ export default {
         let shapeM = new SVG.Matrix(shape)
         let p = this.transformPoint(box.x, box.y, shapeM)
         shape.transform(m).move(p.x, p.y)
-        let box2 = shape.bbox()
+        let box2 = this.getBox(shape)
         shape.dy(-2 * box2.cy).rotate(rotation)
       } else {
         m = m.scale(-1, -1)
@@ -109,7 +110,7 @@ export default {
         let shapeM = new SVG.Matrix(shape)
         let p = this.transformPoint(box.x, box.y, shapeM)
         shape.transform(m).move(p.x - box.width, p.y)
-        let box2 = shape.bbox()
+        let box2 = this.getBox(shape)
         shape.dmove(-2 * box2.cx, -2 * box2.cy).rotate(rotation)
       }
       shape.remember('_flipY', true)
@@ -127,7 +128,7 @@ export default {
         let shapeM = new SVG.Matrix(shape)
         let p = this.transformPoint(box.x, box.y, shapeM)
         shape.transform(m).move(p.x, p.y)
-        var box2 = shape.bbox()
+        var box2 = this.getBox(shape)
         shape.dx(-2 * box2.cx).rotate(rotation)
       }
       shape.forget('_flipY')
@@ -202,5 +203,17 @@ export default {
         break
     }
     return point
+  },
+  group (shapes, svg) {
+    var draw = svg.draw
+    var g = draw.group()
+    var shapeManager = svg.shapeManager
+    shapes.forEach(shape => {
+      g.add(shape)
+      shape.off('mousedown')
+      shapeManager.remove(shape, true)
+    })
+    g.remember('_svg', svg)
+    shapeEvts.drawstop.call(g)
   }
 }

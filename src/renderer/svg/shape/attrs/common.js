@@ -5,5 +5,6 @@ export default {
   'stroke-color': '#000',
   cursor: 'move',
   opacity: 1,
-  'shape-rendering': 'crispEdges'
+  'shape-rendering': 'crispEdges',
+  'vector-effect': 'non-scaling-stroke'
 }

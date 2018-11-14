@@ -1,6 +1,6 @@
 import 'svg.select.js'
 import 'svg.draggable.js'
-import 'svg.resize.js'
+import './resize'
 import SVG from 'svg.js'
 import CreateCommand from '../command/CreateCommand'
 import MoveCommand from '../command/MoveCommand'
@@ -58,8 +58,10 @@ var imgLoaded = function () {
     m = new SVG.Matrix(shape)
     attrs = this.attr()
   })
-  let cmd = new CreateCommand(_svg, shape)
-  commandManager.executeCommand(cmd)
+  if (!(shape instanceof SVG.G)) {
+    let cmd = new CreateCommand(_svg, shape)
+    commandManager.executeCommand(cmd)
+  }
 }
 var mousedown = function (evt) {
   var selectorManager = this.remember('_svg').selectorManager

@@ -146,6 +146,25 @@ export var template = [
     ]
   },
   {
+    label: '组合(Z)',
+    submenu: [
+      {
+        label: '组合元件',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('group')
+        }
+      },
+      {
+        label: '拆分元件',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('ungroup')
+        }
+      }
+    ]
+  },
+  {
     label: '排序(Z)',
     submenu: [
       {
