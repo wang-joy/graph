@@ -249,6 +249,16 @@ export default {
           shapeUtils.group(shapes, currentSvg)
         }
       }
+    },
+    ungroup () {
+      var currentSvg = svgManager.currentSVG
+      if (currentSvg) {
+        let selectorManager = currentSvg.selectorManager
+        let shapes = selectorManager.getSelectedShapes()
+        if (shapes.length >= 1) {
+          shapes.forEach(shape => shapeUtils.ungroup(shape, currentSvg))
+        }
+      }
     }
   },
   mounted () {
@@ -269,6 +279,7 @@ export default {
     this.$electron.ipcRenderer.on('justify', that.justify)
     this.$electron.ipcRenderer.on('arrange', that.arrange)
     this.$electron.ipcRenderer.on('group', that.group)
+    this.$electron.ipcRenderer.on('ungroup', that.ungroup)
   },
   computed: {...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width})}
 }
