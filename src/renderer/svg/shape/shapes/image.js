@@ -4,9 +4,14 @@ import electronutil from '../../../../utils/electronutil'
 import fileutil from '../../../../utils/fileutil'
 import path from 'path'
 function _createImage (filename, svg) {
-  var extname = path.extname(filename)
-  var date = Date.now()
-  var filePath = path.join(__dirname, `../../../assets/uploads/imgs/${date.toString()}${extname}`)
+  // var extname = path.extname(filename)
+  // var date = Date.now()
+  var baseName = path.win32.basename(filename)
+  var imgDir = path.join(__dirname, '../../../../../imgs/')
+  if (process.env.NODE_ENV === 'production') {
+    imgDir = path.join(process.resourcesPath, '../imgs/')
+  }
+  var filePath = imgDir + '/' + baseName
   fileutil.readLocalFile(filename, filePath)
   var img = new Image()
   img.attr(ImageAttr)

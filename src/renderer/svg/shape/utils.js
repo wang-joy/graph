@@ -1,5 +1,6 @@
 import SVG from 'svg.js'
 import shapeEvts from './ShapeEvents'
+import 'svg.draggable.js'
 export default {
   isPolyline (shape) {
     return shape && shape.type === 'polyline'
@@ -210,10 +211,26 @@ export default {
     var shapeManager = svg.shapeManager
     shapes.forEach(shape => {
       g.add(shape)
+      shape.remember('_m', new SVG.Matrix(shape))
       shape.off('mousedown')
       shapeManager.remove(shape, true)
     })
     g.remember('_svg', svg)
     shapeEvts.drawstop.call(g)
+  },
+  ungroup (g, svg) {
+    var shapeManager = svg.shapeManager
+    var selectorManager = svg.selectorManager
+    var children = []
+    g.each(function () {
+      var shape = this
+      var m = shape.remember('_m')
+      shape.transform(m).draggable().on('mousedown', shapeEvts.mousedown)
+      shapeManager.push(shape)
+      children.push(shape)
+    })
+    selectorManager.unSelectShape(g)
+    shapeManager.remove(g)
+    selectorManager.multiSelect(children)
   }
 }
