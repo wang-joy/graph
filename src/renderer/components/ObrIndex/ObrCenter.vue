@@ -11,7 +11,7 @@
 <script>
 import SVG from 'svg.js'
 import 'svg.draggable.js'
-import 'svg.resize.js'
+import '../../svg/shape/resize'
 import svgManager from '@/svg/SvgManager'
 import shapeEvts from '@/svg/shape/ShapeEvents'
 import copyManager from '@/svg/copyManager'

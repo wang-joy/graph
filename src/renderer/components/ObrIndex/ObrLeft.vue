@@ -7,6 +7,7 @@
 <script>
 import svgManager from '@/svg/SvgManager'
 import 'svg.draw.js'
+import '../../svg/shape/draw'
 import utils from '@/svg/shape/utils'
 export default {
   data () {
@@ -54,6 +55,11 @@ export default {
             id: '00008',
             type: 'text',
             desc: '文本'
+          },
+          {
+            id: '00009',
+            type: 'curve',
+            desc: '曲线'
           }
         ]
       }

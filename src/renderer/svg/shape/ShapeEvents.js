@@ -1,4 +1,4 @@
-import 'svg.select.js'
+import './select'
 import 'svg.draggable.js'
 import './resize'
 import SVG from 'svg.js'

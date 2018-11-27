@@ -8,11 +8,14 @@ export default {
   isPolygon (shape) {
     return shape && shape.type === 'polygon'
   },
+  isCurve (shape) {
+    return shape && shape.remember('_type') === 'curve'
+  },
   transformPoint (x, y, m) {
     return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f}
   },
   isPolylineAndPolygon (shape) {
-    return shape && (shape.type === 'polygon' || shape.type === 'polyline')
+    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.remember('_type') === 'curve')
   },
   isRboxIntersect (shape1, shape2) {
     var rbox1 = shape1.rbox()

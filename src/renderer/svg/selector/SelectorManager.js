@@ -1,5 +1,5 @@
 import SVG from 'svg.js'
-import 'svg.select.js'
+import '../shape/select'
 import 'svg.draggable.js'
 import ShapeUtils from '../shape/utils'
 class SelectorManager {
@@ -31,7 +31,7 @@ class SelectorManager {
     this.shapes = []
   }
   _isDeepSelect (shape) {
-    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.type === 'line')
+    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.type === 'line' || shape.remember('_type') === 'curve')
   }
   multiSelect (shapes) {
     this.clearSelect()

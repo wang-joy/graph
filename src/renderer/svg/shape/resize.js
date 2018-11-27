@@ -23,7 +23,6 @@ ResizeHandler.prototype._extractPosition = function (event) {
 }
 
 ResizeHandler.prototype.init = function (options) {
-  console.log('myresize')
   var _this = this
   this.stop()
   if (options === 'stop') {
@@ -100,7 +99,15 @@ ResizeHandler.prototype.resize = function (event) {
   if (event.detail.i !== undefined) {
     // get the point array
     var array = this.el.array().valueOf()
-
+    if (this.el.remember('_type') === 'curve') {
+      array = this.el.getPoints()
+      if (event.detail.i - 1 > 0) {
+        this.parameters.pointCoords1 = [array[event.detail.i - 1][0], array[event.detail.i - 1][1]]
+      }
+      if (event.detail.i + 1 < array.length) {
+        this.parameters.pointCoords2 = [array[event.detail.i + 1][0], array[event.detail.i + 1][1]]
+      }
+    }
     // Save the index and the point which is moved
     this.parameters.i = event.detail.i
     this.parameters.pointCoords = [array[event.detail.i][0], array[event.detail.i][1]]
@@ -436,16 +443,60 @@ ResizeHandler.prototype.resize = function (event) {
       this.calc = function (diffX, diffY) {
         // Snapping the point to the grid
         var snap = this.snapToGrid(diffX, diffY, this.parameters.pointCoords[0], this.parameters.pointCoords[1])
-
+        if (this.el.remember('_type') === 'curve') {
+          var pointArray = this.el.getPoints()
+          var i = this.parameters.i
+          var pointCoords = this.parameters.pointCoords
+          var pointCoords1 = this.parameters.pointCoords1
+          var pointCoords2 = this.parameters.pointCoords2
+          if (i === 0) {
+            pointArray[i][0] = pointCoords[0] + snap[0]
+            pointArray[i][1] = pointCoords[1] + snap[1]
+            pointArray[i + 1][0] = pointCoords2[0] + snap[0]
+            pointArray[i + 1][1] = pointCoords2[1] + snap[1]
+          } else if (i === 1 || i === pointArray.length - 2) {
+            pointArray[i][0] = pointCoords[0] + snap[0]
+            pointArray[i][1] = pointCoords[1] + snap[1]
+          } else if (i === pointArray.length - 1) {
+            pointArray[i - 1][0] = pointCoords1[0] + snap[0]
+            pointArray[i - 1][1] = pointCoords1[1] + snap[1]
+            if (pointCoords[0] !== pointCoords1[0] || pointCoords[1] !== pointCoords1[1]) {
+              pointArray[i][0] = pointCoords[0] + snap[0]
+              pointArray[i][1] = pointCoords[1] + snap[1]
+            }
+          } else {
+            if ((i - 1) % 3 === 1) {
+              pointArray[i][0] = pointCoords[0] + snap[0]
+              pointArray[i][1] = pointCoords[1] + snap[1]
+              pointArray[i + 2][0] = 2 * pointArray[i + 1][0] - pointArray[i][0]
+              pointArray[i + 2][1] = 2 * pointArray[i + 1][1] - pointArray[i][1]
+            } else if ((i - 1) % 3 === 0) {
+              pointArray[i][0] = pointCoords[0] + snap[0]
+              pointArray[i][1] = pointCoords[1] + snap[1]
+              pointArray[i - 2][0] = 2 * pointArray[i - 1][0] - pointArray[i][0]
+              pointArray[i - 2][1] = 2 * pointArray[i - 1][1] - pointArray[i][1]
+            } else {
+              pointArray[i - 1][0] = pointCoords1[0] + snap[0]
+              pointArray[i - 1][1] = pointCoords1[1] + snap[1]
+              pointArray[i][0] = pointCoords[0] + snap[0]
+              pointArray[i][1] = pointCoords[1] + snap[1]
+              pointArray[i + 1][0] = pointCoords2[0] + snap[0]
+              pointArray[i + 1][1] = pointCoords2[1] + snap[1]
+            }
+          }
+          // And plot the new this.el
+          this.el.plotPoints(pointArray)
+        } else {
         // Get the point array
-        var array = this.el.array().valueOf()
+          var array = this.el.array().valueOf()
 
-        // Changing the moved point in the array
-        array[this.parameters.i][0] = this.parameters.pointCoords[0] + snap[0]
-        array[this.parameters.i][1] = this.parameters.pointCoords[1] + snap[1]
+          // Changing the moved point in the array
+          array[this.parameters.i][0] = this.parameters.pointCoords[0] + snap[0]
+          array[this.parameters.i][1] = this.parameters.pointCoords[1] + snap[1]
 
-        // And plot the new this.el
-        this.el.plot(array)
+          // And plot the new this.el
+          this.el.plot(array)
+        }
       }
   }
 
