@@ -43,7 +43,6 @@ var func = function (svg) {
   var curve = new SVG.Curve()
   curve.attr(CurveAttr)
   curve.remember('_svg', svg)
-  curve.remember('_type', 'curve')
   return curve
 }
 export default func

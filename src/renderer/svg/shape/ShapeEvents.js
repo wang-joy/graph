@@ -6,6 +6,7 @@ import CreateCommand from '../command/CreateCommand'
 import MoveCommand from '../command/MoveCommand'
 import ResizeCommand from '../command/ResizeCommand'
 import ShapeUtils from './utils'
+import Bus from '@/bus/Bus'
 var drawdone = function () {
 }
 var drawstop = function () {
@@ -62,6 +63,7 @@ var imgLoaded = function () {
     let cmd = new CreateCommand(_svg, shape)
     commandManager.executeCommand(cmd)
   }
+  Bus.$emit('createShape', this)
 }
 var mousedown = function (evt) {
   var selectorManager = this.remember('_svg').selectorManager

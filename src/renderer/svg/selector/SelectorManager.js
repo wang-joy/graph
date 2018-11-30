@@ -2,6 +2,7 @@ import SVG from 'svg.js'
 import '../shape/select'
 import 'svg.draggable.js'
 import ShapeUtils from '../shape/utils'
+import Bus from '@/bus/Bus'
 class SelectorManager {
   constructor () {
     this.shapes = []
@@ -18,10 +19,12 @@ class SelectorManager {
         callback.call(this)
       }
     }
+    Bus.$emit('selectShapes', this.shapes)
   }
   clearSelect (i) {
     var this_ = this
     this.shapes.forEach((shape, index) => {
+      console.log(this_._isDeepSelect(shape))
       if (i === 'undefined' || i !== index) {
         shape.selectize(false, {deepSelect: this_._isDeepSelect(shape)})
         shape.forget('multiSelect')
@@ -31,7 +34,7 @@ class SelectorManager {
     this.shapes = []
   }
   _isDeepSelect (shape) {
-    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.type === 'line' || shape.remember('_type') === 'curve')
+    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.type === 'line' || shape.attr('type') === 'curve')
   }
   multiSelect (shapes) {
     this.clearSelect()
@@ -66,6 +69,7 @@ class SelectorManager {
         point = p
       })
     })
+    Bus.$emit('selectShapes', this.shapes)
   }
   unSelectShape (shape) {
     var this_ = this

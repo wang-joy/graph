@@ -1,14 +1,16 @@
 import Svg from './Svg'
+import Bus from '../bus/Bus'
 class SvgManager {
   constructor () {
     this.svgs = []
     this.currentSVG = null
   }
 
-  createSVG (id) {
-    var svg = new Svg(id)
+  createSVG (id, tabName) {
+    var svg = new Svg(id, tabName)
     this.svgs.push(svg)
     this.currentSVG = svg
+    this.setCurrentSVG(undefined, svg)
     return svg
   }
   removeSVG (id) {
@@ -19,15 +21,20 @@ class SvgManager {
         }
       })
     }
-    if (this.currentSVG === 'undefined') {
+    if (typeof this.currentSVG === 'undefined') {
       this.currentSVG = null
     }
+    this.setCurrentSVG(undefined, this.currentSVG)
     this.svgs = this.svgs.filter((svg) => svg.id !== id)
   }
-  setCurrentSVG (id) {
-    if (this.svgs.length !== 0) {
+  setCurrentSVG (id, svg) {
+    if (typeof id !== 'undefined' && this.svgs.length !== 0) {
       this.currentSVG = (this.svgs.filter((svg) => svg.id === id))[0]
     }
+    if (typeof svg !== 'undefined') {
+      this.currentSVG = svg
+    }
+    Bus.$emit('setCurrentSVG', this.currentSVG)
   }
 }
 var svgManager = (function () {

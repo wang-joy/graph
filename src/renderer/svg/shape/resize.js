@@ -99,7 +99,7 @@ ResizeHandler.prototype.resize = function (event) {
   if (event.detail.i !== undefined) {
     // get the point array
     var array = this.el.array().valueOf()
-    if (this.el.remember('_type') === 'curve') {
+    if (this.el.attr('type') === 'curve') {
       array = this.el.getPoints()
       if (event.detail.i - 1 > 0) {
         this.parameters.pointCoords1 = [array[event.detail.i - 1][0], array[event.detail.i - 1][1]]
@@ -443,7 +443,7 @@ ResizeHandler.prototype.resize = function (event) {
       this.calc = function (diffX, diffY) {
         // Snapping the point to the grid
         var snap = this.snapToGrid(diffX, diffY, this.parameters.pointCoords[0], this.parameters.pointCoords[1])
-        if (this.el.remember('_type') === 'curve') {
+        if (this.el.attr('type') === 'curve') {
           var pointArray = this.el.getPoints()
           var i = this.parameters.i
           var pointCoords = this.parameters.pointCoords

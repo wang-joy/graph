@@ -9,13 +9,13 @@ export default {
     return shape && shape.type === 'polygon'
   },
   isCurve (shape) {
-    return shape && shape.remember('_type') === 'curve'
+    return shape && shape.attr('type') === 'curve'
   },
   transformPoint (x, y, m) {
     return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f}
   },
   isPolylineAndPolygon (shape) {
-    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.remember('_type') === 'curve')
+    return shape && (shape.type === 'polygon' || shape.type === 'polyline' || shape.attr('type') === 'curve')
   },
   isRboxIntersect (shape1, shape2) {
     var rbox1 = shape1.rbox()
@@ -210,7 +210,7 @@ export default {
   },
   group (shapes, svg) {
     var draw = svg.draw
-    var g = draw.group()
+    var g = draw.group().attr('id', this.getNextId('group', svg)).attr('type', 'g')
     var shapeManager = svg.shapeManager
     shapes.forEach(shape => {
       g.add(shape)
@@ -235,5 +235,15 @@ export default {
     selectorManager.unSelectShape(g)
     shapeManager.remove(g)
     selectorManager.multiSelect(children)
+  },
+  getNextId (type, svg) {
+    var draw = svg.draw
+    var key = '_' + type + '_n'
+    var n = 1
+    if (draw.remember(key)) {
+      n = 1 + svg.draw.remember(key)
+    }
+    svg.draw.remember(key, n)
+    return type + n
   }
 }

@@ -3,7 +3,7 @@
     <obr-ruler :id="'x_ruler'+ id" class="obr-x-ruler" :len='workWidth+20' :style="{'margin-left': -scrollLeft + 'px', width: (workWidth+20) + 'px'}"></obr-ruler>
       <div class="obr-work-space" :style="{height:(height-146)+'px', width: width-420+'px'}" @scroll="scroll">
           <obr-grid :id="'grid'+id" class="obr-grid" :style="{height: workHeight+'px', width: workWidth+'px'}"></obr-grid>
-          <obr-svg :id="'svg'+id" class="obr-svg" :style="{height:workHeight+'px', width: workWidth+'px'}"></obr-svg>
+          <obr-svg :id="'svg'+id" class="obr-svg" :style="{height:workHeight+'px', width: workWidth+'px'}" :tab-name = 'tabName'></obr-svg>
       </div>
     <obr-ruler :id="'y_ruler'+ id" :vertical="true" class="obr-y-ruler" :len="workHeight+20" :style="{'margin-top': -scrollTop + 'px', height: (workHeight+20) + 'px'}"></obr-ruler>
   </div>
@@ -23,7 +23,7 @@ export default {
       scrollTop: 0
     }
   },
-  props: ['id'],
+  props: ['id', 'tab-name'],
   components: {ObrSvg, ObrGrid, ObrRuler},
   computed: {
     ...mapState({height: state => state.ObrWin.height, width: state => state.ObrWin.width}),

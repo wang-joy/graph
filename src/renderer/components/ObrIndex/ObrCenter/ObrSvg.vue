@@ -7,10 +7,11 @@ import svgManager from '@/svg/SvgManager'
 import Bus from '../../../bus/Bus'
 // import ready from '@/assets/js/MutationObserver'
 export default {
-  props: ['id'],
+  props: ['id', 'tab-name'],
   mounted () {
     var svgId = this.id
-    var svg = svgManager.createSVG(svgId)
+    var tabName = this.tabName
+    var svg = svgManager.createSVG(svgId, tabName)
     var draw = svg.draw
     draw.on('mousemove', function (e) {
       var point = this.point(e.screenX, e.screenY)

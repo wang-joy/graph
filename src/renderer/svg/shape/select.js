@@ -108,7 +108,7 @@ SelectHandler.prototype.init = function (value, options) {
   // When deepSelect is enabled and the element is a line/polyline/polygon, draw only points for moving
   if (this.options.deepSelect && ['line', 'polyline', 'polygon'].indexOf(this.el.type) !== -1) {
     this.selectPoints(value)
-  } else if (this.options.deepSelect && this.el.remember('_type') === 'curve') {
+  } else if (this.options.deepSelect && this.el.attr('type') === 'curve') {
     this.selectPoints(value)
     this.selectLines(value)
   } else {
@@ -163,7 +163,7 @@ SelectHandler.prototype.selectPoints = function (value) {
 // create the point-array which contains the 2 points of a line or simply the points-array of polyline/polygon
 SelectHandler.prototype.getPointArray = function () {
   var bbox = this.el.bbox()
-  var array = this.el.remember('_type') === 'curve' ? this.el.getPoints() : this.el.array().valueOf()
+  var array = this.el.attr('type') === 'curve' ? this.el.getPoints() : this.el.array().valueOf()
   return array.map(function (el) {
     return [el[0] - bbox.x, el[1] - bbox.y]
   })

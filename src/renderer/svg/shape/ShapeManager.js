@@ -1,5 +1,6 @@
 import shapes from './shapes/index'
 import ShapeEvents from '@/svg/shape/ShapeEvents'
+import shapeUtils from './utils'
 class ShapeManager {
   constructor (draw) {
     this.shapes = []
@@ -14,6 +15,7 @@ class ShapeManager {
     } else {
       shape.on('drawstop', ShapeEvents.drawstop)
     }
+    shape.attr('id', shapeUtils.getNextId(type, svg)).attr('type', type)
     return shape
   }
 

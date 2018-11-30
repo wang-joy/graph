@@ -7,9 +7,10 @@ import ShapeManager from './shape/ShapeManager'
 import shapeUtils from './shape/utils'
 import CommandManager from './command/CommandManager'
 class Svg {
-  constructor (id) {
+  constructor (id, tabName) {
     this.draw = SVG(id).size('100%', '100%')
     this.id = id
+    this.tabName = tabName
     var selectorManager = new SelectorManager()
     var shapeManager = new ShapeManager(this.draw)
     var commandManager = new CommandManager(10)

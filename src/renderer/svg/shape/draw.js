@@ -2,24 +2,24 @@ import SVG from 'svg.js'
 SVG.Element.prototype.draw.extend('path', {
   init: function (e) {
     var p = this.startPoint
-    if (this.el.remember('_type') === 'curve') {
+    if (this.el.attr('type') === 'curve') {
       this.initCurve(p)
     }
   },
   calc: function (e) {
-    if (this.el.remember('_type') === 'curve') {
+    if (this.el.attr('type') === 'curve') {
       this.calcCurve(e)
     }
   },
   point: function (e) {
-    if (this.el.remember('_type') === 'curve') {
+    if (this.el.attr('type') === 'curve') {
       this.pointCurve(e)
       return
     }
     this.stop(e)
   },
   clean: function () {
-    if (this.el.remember('_type') === 'curve') {
+    if (this.el.attr('type') === 'curve') {
       this.cleanCurve()
     }
   },

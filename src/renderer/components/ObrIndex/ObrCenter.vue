@@ -2,7 +2,7 @@
   <div>
     <el-tabs  type="card" closable v-model="val" @tab-remove="removeTab" @tab-click='clickTab'>
       <el-tab-pane v-for="item of tabList" :name="item.name" :label="item.label" :key="item.name" class="tab-pane" :style="{height:(height-126)+'px', width: width-400+'px'}">
-        <obr-pane :id="item.name"></obr-pane>
+        <obr-pane :id="item.name" :tab-name = "item.label"></obr-pane>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -21,6 +21,7 @@ import {mapState} from 'vuex'
 import electronutil from '../../../utils/electronutil'
 import fileutil from '../../../utils/fileutil'
 import fs from 'fs'
+import Bus from '../../bus/Bus'
 export default {
   data () {
     return {
@@ -136,6 +137,7 @@ export default {
         let cmdManager = currentSvg.commandManager
         console.log(cmdManager)
         cmdManager.undo()
+        Bus.$emit('setCurrentSVG', currentSvg)
       }
     },
     redo () {
@@ -143,6 +145,7 @@ export default {
       if (currentSvg) {
         let cmdManager = currentSvg.commandManager
         cmdManager.redo()
+        Bus.$emit('setCurrentSVG', currentSvg)
       }
     },
     cut () {
@@ -152,6 +155,7 @@ export default {
         let shapes = selectorManager.shapes
         if (shapes.length > 0) {
           copyManager.cut(currentSvg, shapes)
+          Bus.$emit('setCurrentSVG', currentSvg)
         }
       }
     },
@@ -162,6 +166,7 @@ export default {
         let shapes = selectorManager.shapes
         if (shapes.length > 0) {
           copyManager.copy(shapes)
+          Bus.$emit('setCurrentSVG', currentSvg)
         }
       }
     },
@@ -247,6 +252,7 @@ export default {
         let shapes = selectorManager.getSelectedShapes()
         if (shapes.length > 1) {
           shapeUtils.group(shapes, currentSvg)
+          Bus.$emit('setCurrentSVG', currentSvg)
         }
       }
     },
@@ -257,6 +263,7 @@ export default {
         let shapes = selectorManager.getSelectedShapes()
         if (shapes.length >= 1) {
           shapes.forEach(shape => shapeUtils.ungroup(shape, currentSvg))
+          Bus.$emit('setCurrentSVG', currentSvg)
         }
       }
     }
