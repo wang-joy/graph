@@ -22,6 +22,7 @@ var resizedone = function (attrs, m) {
   var commandManager = _svg.commandManager
   let cmd = new ResizeCommand(attrs, m, shape)
   commandManager.executeCommand(cmd)
+  Bus.$emit('selectShapes', [shape])
 }
 var imgLoaded = function () {
   var _svg = this.remember('_svg')
@@ -76,6 +77,7 @@ var dragend = function (shape, box) {
   var _svg = shape.remember('_svg')
   var commandManager = _svg.commandManager
   commandManager.executeCommand(cmd)
+  Bus.$emit('selectShapes', [shape])
 }
 export default {
   drawdone,

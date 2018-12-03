@@ -24,7 +24,6 @@ class SelectorManager {
   clearSelect (i) {
     var this_ = this
     this.shapes.forEach((shape, index) => {
-      console.log(this_._isDeepSelect(shape))
       if (i === 'undefined' || i !== index) {
         shape.selectize(false, {deepSelect: this_._isDeepSelect(shape)})
         shape.forget('multiSelect')

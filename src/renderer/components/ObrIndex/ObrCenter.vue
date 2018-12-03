@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tabs  type="card" closable v-model="val" @tab-remove="removeTab" @tab-click='clickTab'>
-      <el-tab-pane v-for="item of tabList" :name="item.name" :label="item.label" :key="item.name" class="tab-pane" :style="{height:(height-126)+'px', width: width-400+'px'}">
+      <el-tab-pane v-for="item of tabList" :name="item.name" :label="item.label" :key="item.name" class="tab-pane" :style="{height:(height-126)+'px', width: width-450+'px'}">
         <obr-pane :id="item.name" :tab-name = "item.label"></obr-pane>
       </el-tab-pane>
     </el-tabs>

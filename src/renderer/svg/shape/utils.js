@@ -245,5 +245,11 @@ export default {
     }
     svg.draw.remember(key, n)
     return type + n
+  },
+  getTopParent (shape) {
+    if (shape.parent() && !(shape.parent() instanceof SVG.Doc)) {
+      shape = this.getTopParent(shape.parent())
+    }
+    return shape
   }
 }

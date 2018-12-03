@@ -11,7 +11,7 @@ function _createImage (filename, svg) {
   if (process.env.NODE_ENV === 'production') {
     imgDir = path.join(process.resourcesPath, '../imgs/')
   }
-  var filePath = imgDir + '/' + baseName
+  var filePath = imgDir + '\\' + baseName
   fileutil.readLocalFile(filename, filePath)
   var img = new Image()
   img.attr(ImageAttr)

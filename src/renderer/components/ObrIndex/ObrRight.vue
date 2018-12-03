@@ -6,18 +6,30 @@
     <transition name="fade">
       <el-tree :data="shapes" node-key="id" highlight-current :current-node-key = 'currentId' @node-click="nodeClick" v-show="isShowTree" class="obr-tree"></el-tree>
 		</transition>
+    <div class="obr-attr">
+      <div class="obr-input" v-for=" item in attrs" :key="item.title">
+        <label :for="item.title">{{item.desc}}</label>
+        <el-input  :name="item.title" v-model="item.val" :size="size" :id="item.title" class="el-input"></el-input>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Bus from '../../bus/Bus'
+import svgManager from '@/svg/SvgManager'
+import ShapeUtils from '@/svg/shape/utils'
+import SVG from 'svg.js'
+import AttrUtils from '@/svg/shape/attrs/utils'
 export default {
   data () {
     return {
       shapes: [],
       isShowTree: false,
       label: '',
-      currentId: ''
+      currentId: '',
+      size: 'mini',
+      attrs: []
     }
   },
   methods: {
@@ -27,6 +39,7 @@ export default {
     nodeClick (node) {
       this.label = node.label
       this.currentId = node.id
+      this.select(this.currentId)
       this.isShowTree = false
     },
     getChildren (shape) {
@@ -68,12 +81,27 @@ export default {
       if (shapes.length === 1) {
         this.label = shapes[0].attr('id')
         this.currentId = shapes[0].attr('id')
+        this.attrs = AttrUtils.getAttrs(shapes[0])
       } else if (shapes.length > 1) {
         this.label = 'shapes ( ' + shapes.length + '个 )'
       }
     },
     onCreateShape (shape) {
       this.shapes[0].children.push({id: shape.attr('id'), label: shape.attr('id')})
+    },
+    select (id) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        // var shapeManager = currentSVG.shapeManager
+        var selectorManager = currentSVG.selectorManager
+        if (currentSVG.id === id) {
+          selectorManager.clearSelect()
+        } else {
+          var shape = ShapeUtils.getTopParent(SVG.get(id))
+          // this.onSelectShapes([shape])
+          selectorManager.selectShape(shape)
+        }
+      }
     }
   },
   mounted () {
@@ -85,7 +113,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .obr-right{
   position: relative;
 }
@@ -109,5 +137,28 @@ export default {
 	max-height: 500px;
 	overflow: auto;
   border-bottom:1px solid rgb(228, 231, 237)
+}
+.obr-attr .obr-input{
+  padding: 0 5px;
+  font-size: 12px;
+  border-bottom: 1px solid #dcdfe6;
+}
+.obr-attr .obr-input label{
+  display: inline-block;
+  width: 100px;
+  height: 28px;
+  line-height: 28px;
+  /* text-align: right; */
+  padding: 0 5px;
+}
+.obr-attr .obr-input .el-input{
+  width: 120px;
+  border: none
+}
+.obr-attr .obr-input .el-input__inner{
+  padding: 0 2px;
+  border: none;
+  border-left: 1px solid #dcdfe6;
+  border-radius: 0;
 }
 </style>
