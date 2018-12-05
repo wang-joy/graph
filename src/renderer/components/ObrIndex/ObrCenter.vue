@@ -174,6 +174,7 @@ export default {
       var currentSvg = svgManager.currentSVG
       if (currentSvg) {
         copyManager.paste(currentSvg)
+        Bus.$emit('setCurrentSVG', currentSvg)
       }
     },
     selectAll () {
@@ -202,6 +203,7 @@ export default {
         shapes.forEach(shape => {
           shape.transform({rotation: degree, relative: true})
         })
+        Bus.$emit('selectShapes', shapes)
       }
     },
     flipX () {
@@ -212,6 +214,7 @@ export default {
         shapes.forEach(shape => {
           shapeUtils.flipX(shape)
         })
+        Bus.$emit('selectShapes', shapes)
       }
     },
     flipY () {
@@ -222,6 +225,7 @@ export default {
         shapes.forEach(shape => {
           shapeUtils.flipY(shape)
         })
+        Bus.$emit('selectShapes', shapes)
       }
     },
     justify (evts, type) {
@@ -233,6 +237,7 @@ export default {
           let draw = currentSvg.draw
           shapeUtils.justify(shapes, type, draw)
         }
+        Bus.$emit('selectShapes', shapes)
       }
     },
     arrange (evt, type) {

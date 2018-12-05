@@ -77,7 +77,8 @@ var dragend = function (shape, box) {
   var _svg = shape.remember('_svg')
   var commandManager = _svg.commandManager
   commandManager.executeCommand(cmd)
-  Bus.$emit('selectShapes', [shape])
+  var selectorManager = _svg.selectorManager
+  Bus.$emit('selectShapes', selectorManager.getSelectedShapes())
 }
 export default {
   drawdone,

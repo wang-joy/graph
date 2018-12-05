@@ -9,7 +9,20 @@
     <div class="obr-attr">
       <div class="obr-input" v-for=" item in attrs" :key="item.title">
         <label :for="item.title">{{item.desc}}</label>
-        <el-input  :name="item.title" v-model="item.val" :size="size" :id="item.title" class="el-input"></el-input>
+        <template v-if="item.title === 'fill'">
+          <div class="color">
+            <span class="val">{{item.val}}</span>
+            <color-container class="color-container" v-model="item.val" @ok="fill"></color-container>
+          </div>
+        </template>
+        <template v-else-if="item.title === 'stroke'">
+          <div class="color">
+            <span class="val">{{item.val}}</span>
+          </div>
+        </template>
+        <template v-else>
+          <el-input :name="item.title" v-model="item.val" @blur="blur(item.setter)" @keyup.enter.native="blur(item.setter)"  :size="size" :id="item.title" class="obr-el-input"></el-input>
+        </template>
       </div>
     </div>
   </div>
@@ -21,6 +34,7 @@ import svgManager from '@/svg/SvgManager'
 import ShapeUtils from '@/svg/shape/utils'
 import SVG from 'svg.js'
 import AttrUtils from '@/svg/shape/attrs/utils'
+import ColorContainer from '../color-picker/ColorContainer'
 export default {
   data () {
     return {
@@ -32,6 +46,7 @@ export default {
       attrs: []
     }
   },
+  components: {ColorContainer},
   methods: {
     showTree () {
       this.isShowTree = !this.isShowTree
@@ -41,6 +56,15 @@ export default {
       this.currentId = node.id
       this.select(this.currentId)
       this.isShowTree = false
+    },
+    blur (setter) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        var selectorManager = currentSVG.selectorManager
+        var shapes = selectorManager.getSelectedShapes()
+        setter.call(AttrUtils, shapes, event.target.value)
+        this.onSelectShapes(shapes)
+      }
     },
     getChildren (shape) {
       var obj = { id: shape.attr('id'), label: shape.attr('id'), children: [] }
@@ -78,12 +102,14 @@ export default {
       }
     },
     onSelectShapes (shapes) {
-      if (shapes.length === 1) {
-        this.label = shapes[0].attr('id')
-        this.currentId = shapes[0].attr('id')
-        this.attrs = AttrUtils.getAttrs(shapes[0])
-      } else if (shapes.length > 1) {
-        this.label = 'shapes ( ' + shapes.length + '个 )'
+      if (shapes.length > 0) {
+        if (shapes.length === 1) {
+          this.label = shapes[0].attr('id')
+          this.currentId = shapes[0].attr('id')
+        } else if (shapes.length > 1) {
+          this.label = 'shapes ( ' + shapes.length + '个 )'
+        }
+        this.attrs = AttrUtils.getShapesAttrs(shapes)
       }
     },
     onCreateShape (shape) {
@@ -101,6 +127,15 @@ export default {
           // this.onSelectShapes([shape])
           selectorManager.selectShape(shape)
         }
+      }
+    },
+    fill (val) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        var selectorManager = currentSVG.selectorManager
+        var shapes = selectorManager.getSelectedShapes()
+        AttrUtils.setFill(shapes, val)
+        this.onSelectShapes(shapes)
       }
     }
   },
@@ -151,14 +186,38 @@ export default {
   /* text-align: right; */
   padding: 0 5px;
 }
-.obr-attr .obr-input .el-input{
+.obr-attr .obr-input .obr-el-input{
   width: 120px;
   border: none
 }
-.obr-attr .obr-input .el-input__inner{
+.obr-attr .obr-input .obr-el-input .el-input__inner{
   padding: 0 2px;
   border: none;
   border-left: 1px solid #dcdfe6;
   border-radius: 0;
+}
+.color{
+  position: relative;
+  display: inline-block;
+  width: 120px;
+  height: 28px;
+  line-height: 28px;
+  border-left: 1px solid #dcdfe6;
+}
+.color .val{
+  display: block;
+  width: 120px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 2px;
+}
+.color .color-container {
+  position: absolute;
+  width: 260px;
+  top:28px;
+  left: -145px;
+  background: #fff;
+  z-index: 1;
+  border: 1px solid #ccc;
 }
 </style>

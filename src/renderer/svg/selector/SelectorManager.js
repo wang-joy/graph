@@ -18,8 +18,8 @@ class SelectorManager {
       if (typeof callback === 'function') {
         callback.call(this)
       }
+      Bus.$emit('selectShapes', this.shapes)
     }
-    Bus.$emit('selectShapes', this.shapes)
   }
   clearSelect (i) {
     var this_ = this
