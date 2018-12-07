@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import draggable from './js/draggable'
+import draggable from 'element-ui/packages/color-picker/src/draggable'
 export default {
   props: {
     color: {

@@ -7,21 +7,31 @@
       <el-tree :data="shapes" node-key="id" highlight-current :current-node-key = 'currentId' @node-click="nodeClick" v-show="isShowTree" class="obr-tree"></el-tree>
 		</transition>
     <div class="obr-attr">
-      <div class="obr-input" v-for=" item in attrs" :key="item.title">
+      <div class="obr-input" v-for=" item in attrs" :key="currentId+'_'+item.title">
         <label :for="item.title">{{item.desc}}</label>
         <template v-if="item.title === 'fill'">
-          <div class="color">
-            <span class="val">{{item.val}}</span>
-            <color-container class="color-container" v-model="item.val" @ok="fill"></color-container>
+          <div class="color" v-clickoutside='hideFill' ref="fill">
+            <span class="val" @click="showFill">{{item.val}}</span>
+            <i class="el-icon-caret-bottom caret" @click="showFill"></i>
+            <color-container class="color-container"  v-model="showFillColor" :color-value="item.val" @change="fill"></color-container>
           </div>
         </template>
         <template v-else-if="item.title === 'stroke'">
-          <div class="color">
-            <span class="val">{{item.val}}</span>
+          <div class="color" v-clickoutside='hideStroke'>
+            <span class="val" @click="showStroke">{{item.val}}</span>
+            <i class="el-icon-caret-bottom caret" @click="showStroke"></i>
+            <color-container class="color-container"  v-model="showStrokeColor" :color-value="item.val" @change="stroke"></color-container>
+          </div>
+        </template>
+        <template v-else-if="item.title === 'stroke-dasharray'">
+          <div class="dasharray">
+            <el-select v-model="item.val" :size="size" @change="blur(item.setter, item.val)">
+              <el-option v-for="dash in dashArray" :key="dash.value" :label="dash.display" :value="dash.value"></el-option>
+            </el-select>
           </div>
         </template>
         <template v-else>
-          <el-input :name="item.title" v-model="item.val" @blur="blur(item.setter)" @keyup.enter.native="blur(item.setter)"  :size="size" :id="item.title" class="obr-el-input"></el-input>
+          <el-input :name="item.title" v-model="item.val" @blur="blur(item.setter, item.val)" @keyup.enter.native="blur(item.setter)"  :size="size" :id="item.title" class="obr-el-input"></el-input>
         </template>
       </div>
     </div>
@@ -29,6 +39,8 @@
 </template>
 
 <script>
+import Clickoutside from 'element-ui/src/utils/clickoutside'
+import Popper from 'element-ui/src/utils/vue-popper'
 import Bus from '../../bus/Bus'
 import svgManager from '@/svg/SvgManager'
 import ShapeUtils from '@/svg/shape/utils'
@@ -43,9 +55,27 @@ export default {
       label: '',
       currentId: '',
       size: 'mini',
-      attrs: []
+      attrs: [],
+      showFillColor: false,
+      showStrokeColor: false,
+      dashArray: [
+        {
+          value: '0',
+          display: '—————'
+        },
+        {
+          value: '5,5',
+          display: '- - - - - - - - -'
+        },
+        {
+          value: '10,5,5,5',
+          display: '— - — - — -'
+        }
+      ]
     }
   },
+  directives: {Clickoutside},
+  mixins: [Popper],
   components: {ColorContainer},
   methods: {
     showTree () {
@@ -57,12 +87,12 @@ export default {
       this.select(this.currentId)
       this.isShowTree = false
     },
-    blur (setter) {
+    blur (setter, val) {
       var currentSVG = svgManager.currentSVG
       if (currentSVG) {
         var selectorManager = currentSVG.selectorManager
         var shapes = selectorManager.getSelectedShapes()
-        setter.call(AttrUtils, shapes, event.target.value)
+        setter.call(AttrUtils, shapes, val)
         this.onSelectShapes(shapes)
       }
     },
@@ -137,6 +167,27 @@ export default {
         AttrUtils.setFill(shapes, val)
         this.onSelectShapes(shapes)
       }
+    },
+    stroke (val) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        var selectorManager = currentSVG.selectorManager
+        var shapes = selectorManager.getSelectedShapes()
+        AttrUtils.setStroke(shapes, val)
+        this.onSelectShapes(shapes)
+      }
+    },
+    showFill () {
+      this.showFillColor = !this.showFillColor
+    },
+    hideFill () {
+      this.showFillColor = false
+    },
+    showStroke () {
+      this.showStrokeColor = !this.showStrokeColor
+    },
+    hideStroke () {
+      this.showStrokeColor = false
     }
   },
   mounted () {
@@ -190,26 +241,32 @@ export default {
   width: 120px;
   border: none
 }
-.obr-attr .obr-input .obr-el-input .el-input__inner{
-  padding: 0 2px;
+.obr-attr .obr-input .obr-el-input .el-input__inner, .dasharray .el-input__inner{
+  padding: 0 5px;
   border: none;
   border-left: 1px solid #dcdfe6;
   border-radius: 0;
 }
+.dasharray .el-input__inner:focus,
+.dasharray .el-input__inner:visited,
+.dasharray .el-input.is-focus .el-input__inner, 
+.dasharray .el-input__inner:hover{
+  border: none;
+}
 .color{
   position: relative;
   display: inline-block;
-  width: 120px;
+  width: 125px;
   height: 28px;
   line-height: 28px;
   border-left: 1px solid #dcdfe6;
 }
 .color .val{
-  display: block;
-  width: 120px;
+  display: inline-block;
+  width: 80px;
   height: 28px;
   line-height: 28px;
-  padding: 0 2px;
+  padding: 0 5px;
 }
 .color .color-container {
   position: absolute;
@@ -221,3 +278,23 @@ export default {
   border: 1px solid #ccc;
 }
 </style>
+<style scoped>
+.caret{
+  float: right;
+  width: 28px;
+  height: 28px;
+  font-size: 22px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+.caret:hover{
+  background: #dcdfe6;
+}
+.dasharray{
+  display: inline-block;
+  width: 120px;
+  border-left: 1px solid #dcdfe6;
+}
+</style>
+

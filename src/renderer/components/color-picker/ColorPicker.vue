@@ -1,35 +1,40 @@
 <template>
   <div class="color-picker">
-    <color-span class="color-span" :color = "color"></color-span>
-    <color-slider class="color-slider" vertical :color = "color"></color-slider>
+    <color-span class="color-span" :color = "color" ref="colorSpan"></color-span>
+    <color-slider class="color-slider" vertical :color = "color" ref="colorSlider"></color-slider>
   </div>
 </template>
 
 <script>
-import Color from './js/color'
+import Color from 'element-ui/packages/color-picker/src/color'
 import ColorSpan from './ColorSpan'
 import ColorSlider from './ColorSlider'
 export default {
   data () {
-    const color = new Color({format: this.colorFormat})
+    const color = new Color({format: 'hex'})
     return {
-      color
+      color,
+      colorFormat: 'hex'
     }
   },
   components: {ColorSpan, ColorSlider},
   props: {
-    value: String,
-    'color-format': String
+    value: String
   },
   methods: {
-    displayedRgb (color, showAlpha) {
+    displayedRgb (color) {
       if (!(color instanceof Color)) {
         throw Error('color should be instance of Color Class')
       }
       const { r, g, b } = color.toRgb()
-      return showAlpha
-        ? `rgba(${r}, ${g}, ${b}, ${color.get('alpha') / 100})`
-        : `rgb(${r}, ${g}, ${b})`
+      return `rgb(${r}, ${g}, ${b})`
+    },
+    update () {
+      this.$nextTick(() => {
+        const { colorSpan, colorSlider } = this.$refs
+        colorSpan && colorSpan.update()
+        colorSlider && colorSlider.update()
+      })
     }
   },
   computed: {
@@ -37,7 +42,7 @@ export default {
       if (!this.value && !this.showPanelColor) {
         return 'transparent'
       }
-      return this.displayedRgb(this.color, this.showAlpha)
+      return this.displayedRgb(this.color)
     }
   },
   watch: {
@@ -49,7 +54,7 @@ export default {
     displayedColor (val) {
       const currentValueColor = new Color({format: this.colorFormat})
       currentValueColor.fromString(this.value)
-      const currentValueColorRgb = this.displayedRgb(currentValueColor, this.showAlpha)
+      const currentValueColorRgb = this.displayedRgb(currentValueColor)
       if (val !== currentValueColorRgb) {
         this.$emit('active-change', val)
       }
@@ -57,7 +62,7 @@ export default {
     color: {
       deep: true,
       handler () {
-        this.$emit('input', this.color.value)
+        this.$emit('pick', this.color.value)
       }
     }
   },

@@ -148,7 +148,7 @@ export default {
     return this.createAttr('stroke-opacity', desc, shape.attr('stroke-opacity'), this.setStrokeOpacity)
   },
   getStrokeDashArray (shape, desc = '线条类型') {
-    return this.createAttr('stroke-dasharray', desc, shape.attr('stroke-dasharray'), this.setStrokeDashArray)
+    return this.createAttr('stroke-dasharray', desc, '' + shape.attr('stroke-dasharray'), this.setStrokeDashArray)
   },
   getRadius (shape, desc = '半径') {
     return this.createAttr('radius', desc, shape.attr('r'), this.setRadius)
