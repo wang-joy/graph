@@ -251,5 +251,7 @@ export default {
       shape = this.getTopParent(shape.parent())
     }
     return shape
+  },
+  fillGradient (gradient, shape) {
   }
 }

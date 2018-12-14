@@ -1,8 +1,8 @@
 <template>
   <transition name="el-zoom-in-top" @after-leave="doDestroy">
     <div class="color-container" v-show="showPopper">
-      <p :class="{selected: this.colorValue === 'NONE'}" @click="change('none')">无色</p>
-      <p>渐变</p>
+      <p :class="{selected: this.colorValue === 'NONE'}" @click="change('none')" v-if="transparent">无色</p>
+      <p @click="showGradient" v-if="gradient">渐变</p>
       <color-picker class="color-picker" @pick='pick' :value='val' ref="cp"></color-picker>
       <div class="my-el-input">
         <el-input v-model="customInput"  size="mini"></el-input>
@@ -27,7 +27,9 @@ export default {
     }
   },
   props: {
-    'color-value': String
+    'color-value': String,
+    'gradient': Boolean,
+    'transparent': Boolean
   },
   methods: {
     pick (val) {
@@ -53,6 +55,10 @@ export default {
         }
       }
       this.$emit('input', false)
+    },
+    showGradient () {
+      this.showPopper = false
+      this.$emit('show-gradient', this.colorValue)
     }
   },
   mounted () {

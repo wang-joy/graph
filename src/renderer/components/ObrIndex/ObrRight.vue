@@ -13,14 +13,14 @@
           <div class="color" v-clickoutside='hideFill' ref="fill">
             <span class="val" @click="showFill">{{item.val}}</span>
             <i class="el-icon-caret-bottom caret" @click="showFill"></i>
-            <color-container class="color-container"  v-model="showFillColor" :color-value="item.val" @change="fill"></color-container>
+            <color-container class="color-container"  v-model="showFillColor" :color-value="item.val" @change="fill" @show-gradient="showGradient" transparent gradient></color-container>
           </div>
         </template>
         <template v-else-if="item.title === 'stroke'">
           <div class="color" v-clickoutside='hideStroke'>
             <span class="val" @click="showStroke">{{item.val}}</span>
             <i class="el-icon-caret-bottom caret" @click="showStroke"></i>
-            <color-container class="color-container"  v-model="showStrokeColor" :color-value="item.val" @change="stroke"></color-container>
+            <color-container class="color-container"  v-model="showStrokeColor" :color-value="item.val" @change="stroke" ></color-container>
           </div>
         </template>
         <template v-else-if="item.title === 'stroke-dasharray'">
@@ -35,6 +35,9 @@
         </template>
       </div>
     </div>
+    <el-dialog title="渐变" :visible.sync="dialogVisible" width="430px" class="my-el-dialog">
+      <gradient-container @ok='handleGradientOk' ></gradient-container>
+    </el-dialog>
   </div>
 </template>
 
@@ -47,6 +50,7 @@ import ShapeUtils from '@/svg/shape/utils'
 import SVG from 'svg.js'
 import AttrUtils from '@/svg/shape/attrs/utils'
 import ColorContainer from '../color-picker/ColorContainer'
+import GradientContainer from '../gradient-picker/PickerContainer.vue'
 export default {
   data () {
     return {
@@ -58,6 +62,7 @@ export default {
       attrs: [],
       showFillColor: false,
       showStrokeColor: false,
+      dialogVisible: false,
       dashArray: [
         {
           value: '0',
@@ -76,7 +81,7 @@ export default {
   },
   directives: {Clickoutside},
   mixins: [Popper],
-  components: {ColorContainer},
+  components: {ColorContainer, GradientContainer},
   methods: {
     showTree () {
       this.isShowTree = !this.isShowTree
@@ -188,6 +193,13 @@ export default {
     },
     hideStroke () {
       this.showStrokeColor = false
+    },
+    showGradient (gradient) {
+      this.dialogVisible = true
+      this.gradient = gradient
+    },
+    handleGradientOk (colors) {
+      console.log(colors)
     }
   },
   mounted () {
@@ -276,6 +288,9 @@ export default {
   background: #fff;
   z-index: 1;
   border: 1px solid #ccc;
+}
+.my-el-dialog .el-dialog__body{
+  padding: 10px 20px 30px;
 }
 </style>
 <style scoped>
