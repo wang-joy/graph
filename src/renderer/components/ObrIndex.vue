@@ -1,10 +1,10 @@
 <template>
   <div class="obr-index">
-    <obr-tools-bar class="obr-tools-bar" :style="{height:'50px', width: width+'px'}"></obr-tools-bar>
+    <obr-tools-bar class="obr-tools-bar" :style="{height:'60px', width: width+'px'}"></obr-tools-bar>
     <div class="obr-main">
-      <obr-left class="obr-left" :style="{height:(height-70)+'px', width: '199px'}"></obr-left>
-      <obr-center class="obr-center"  :style="{height:(height-70)+'px', width: width-450+'px'}"></obr-center>
-      <obr-right class="obr-right" :style="{height:(height-70)+'px', width: '249px'}"></obr-right>
+      <obr-left class="obr-left" :style="{height:(height-80)+'px', width: '199px'}"></obr-left>
+      <obr-center class="obr-center"  :style="{height:(height-80)+'px', width: width-450+'px'}"></obr-center>
+      <obr-right class="obr-right" :style="{height:(height-80)+'px', width: '249px'}"></obr-right>
     </div>
   </div>
 </template>
