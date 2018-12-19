@@ -22,13 +22,17 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     height: size.height,
     useContentSize: true,
-    width: size.width
+    width: size.width,
+    show: false
   })
 
   mainWindow.maximize()
   mainWindow.loadURL(winURL)
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+  mainWindow.once('did-finish-load', () => {
+    mainWindow.show()
   })
 }
 
@@ -50,7 +54,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
 /**
  * Auto Updater
  *

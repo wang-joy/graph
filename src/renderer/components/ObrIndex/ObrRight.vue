@@ -8,7 +8,7 @@
 		</transition>
     <div class="obr-attr">
       <div class="obr-input" v-for=" item in attrs" :key="currentId+'_'+item.title">
-        <label :for="item.title">{{item.desc}}</label>
+        <label :for="item.title" class="item-desc">{{item.desc}}</label>
         <template v-if="item.title === 'fill'">
           <div class="color" v-clickoutside='hideFill' ref="fill">
             <span class="val" @click="showFill">{{item.val}}</span>
@@ -28,6 +28,25 @@
             <el-select v-model="item.val" :size="size" @change="blur(item.setter, item.val)">
               <el-option v-for="dash in dashArray" :key="dash.value" :label="dash.display" :value="dash.value"></el-option>
             </el-select>
+          </div>
+        </template>
+        <template v-else-if="item.title === 'background'">
+          <div class="color" v-clickoutside='hideBackground'>
+            <span class="val" @click="showBackground">{{item.val}}</span>
+            <i class="el-icon-caret-bottom caret" @click="showBackground"></i>
+            <color-container class="color-container"  v-model="showBackgroundColor" :color-value="item.val" @change="setSvgBackground" ></color-container>
+          </div>
+        </template>
+        <template v-else-if="item.title === 'gridColor'">
+          <div class="color" v-clickoutside='hideGridColor'>
+            <span class="val" @click="showGridColor">{{item.val}}</span>
+            <i class="el-icon-caret-bottom caret" @click="showGridColor"></i>
+            <color-container class="color-container"  v-model="gridColor" :color-value="item.val" @change="setSvgGridColor" ></color-container>
+          </div>
+        </template>
+        <template v-else-if="item.title === 'gridShow'">
+          <div class="switch">
+            <el-switch v-model="item.val" @change='changeGridShow'> </el-switch>
           </div>
         </template>
         <template v-else>
@@ -62,6 +81,8 @@ export default {
       attrs: [],
       showFillColor: false,
       showStrokeColor: false,
+      showBackgroundColor: false,
+      gridColor: false,
       dialogVisible: false,
       dashArray: [
         {
@@ -97,8 +118,13 @@ export default {
       if (currentSVG) {
         var selectorManager = currentSVG.selectorManager
         var shapes = selectorManager.getSelectedShapes()
-        setter.call(AttrUtils, shapes, val)
-        this.onSelectShapes(shapes)
+        if (shapes.length > 0) {
+          setter.call(AttrUtils, shapes, val)
+          this.onSelectShapes(shapes)
+        } else {
+          setter.call(AttrUtils, currentSVG, val)
+          this.onSelectSvg(currentSVG)
+        }
       }
     },
     getChildren (shape) {
@@ -122,6 +148,7 @@ export default {
         } else {
           this.label = currentSVG.tabName
           this.currentId = currentSVG.id
+          this.attrs = AttrUtils.getSvgAttrs(currentSVG)
         }
         var shapes = shapeManager.getShapes()
         this.shapes = [ { id: currentSVG.id, label: currentSVG.tabName, children: [] } ]
@@ -153,13 +180,12 @@ export default {
     select (id) {
       var currentSVG = svgManager.currentSVG
       if (currentSVG) {
-        // var shapeManager = currentSVG.shapeManager
         var selectorManager = currentSVG.selectorManager
         if (currentSVG.id === id) {
           selectorManager.clearSelect()
+          this.onSelectSvg()
         } else {
           var shape = ShapeUtils.getTopParent(SVG.get(id))
-          // this.onSelectShapes([shape])
           selectorManager.selectShape(shape)
         }
       }
@@ -169,8 +195,10 @@ export default {
       if (currentSVG) {
         var selectorManager = currentSVG.selectorManager
         var shapes = selectorManager.getSelectedShapes()
-        AttrUtils.setFill(shapes, val)
-        this.onSelectShapes(shapes)
+        if (shapes.length > 0) {
+          AttrUtils.setFill(shapes, val)
+          this.onSelectShapes(shapes)
+        }
       }
     },
     stroke (val) {
@@ -180,6 +208,20 @@ export default {
         var shapes = selectorManager.getSelectedShapes()
         AttrUtils.setStroke(shapes, val)
         this.onSelectShapes(shapes)
+      }
+    },
+    setSvgBackground (val) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        AttrUtils.setSvgBackGround(currentSVG, val)
+        this.onSelectSvg(currentSVG)
+      }
+    },
+    setSvgGridColor (val) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        AttrUtils.setSvgGridColor(currentSVG, val)
+        this.onSelectSvg(currentSVG)
       }
     },
     showFill () {
@@ -194,12 +236,36 @@ export default {
     hideStroke () {
       this.showStrokeColor = false
     },
+    showBackground () {
+      this.showBackgroundColor = !this.showBackgroundColor
+    },
+    hideBackground () {
+      this.showBackgroundColor = false
+    },
+    showGridColor () {
+      this.gridColor = !this.gridColor
+    },
+    hideGridColor () {
+      this.gridColor = false
+    },
     showGradient (gradient) {
       this.dialogVisible = true
       this.gradient = gradient
     },
     handleGradientOk (colors) {
       console.log(colors)
+    },
+    onSelectSvg () {
+      var currentSVG = svgManager.currentSVG
+      this.label = currentSVG.tabName
+      this.currentId = currentSVG.id
+      this.attrs = AttrUtils.getSvgAttrs(currentSVG)
+    },
+    changeGridShow (val) {
+      var currentSVG = svgManager.currentSVG
+      if (currentSVG) {
+        AttrUtils.setSvgGridShow(currentSVG, val)
+      }
     }
   },
   mounted () {
@@ -207,6 +273,7 @@ export default {
     Bus.$on('setCurrentSVG', _this.onSetCurrentSVG)
     Bus.$on('selectShapes', _this.onSelectShapes)
     Bus.$on('createShape', _this.onCreateShape)
+    Bus.$on('selectSvg', _this.onSelectSvg)
   }
 }
 </script>
@@ -265,13 +332,17 @@ export default {
 .dasharray .el-input__inner:hover{
   border: none;
 }
-.color{
+.color, .switch{
   position: relative;
   display: inline-block;
   width: 125px;
   height: 28px;
   line-height: 28px;
   border-left: 1px solid #dcdfe6;
+}
+.switch{
+  width: 120px;
+  padding-left:5px;
 }
 .color .val{
   display: inline-block;
@@ -310,6 +381,9 @@ export default {
   display: inline-block;
   width: 120px;
   border-left: 1px solid #dcdfe6;
+}
+.item-desc {
+  font-family: '微软雅黑'
 }
 </style>
 

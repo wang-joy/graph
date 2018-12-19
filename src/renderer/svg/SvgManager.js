@@ -6,8 +6,8 @@ class SvgManager {
     this.currentSVG = null
   }
 
-  createSVG (id, tabName) {
-    var svg = new Svg(id, tabName)
+  createSVG (id, tabName, vue) {
+    var svg = new Svg(id, tabName, vue)
     this.svgs.push(svg)
     this.currentSVG = svg
     this.setCurrentSVG(undefined, svg)

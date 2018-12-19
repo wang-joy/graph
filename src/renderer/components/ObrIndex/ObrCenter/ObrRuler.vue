@@ -7,8 +7,16 @@ import SVG from 'svg.js'
 import Bus from '../../../bus/Bus'
 export default {
   props: ['id', 'vertical', 'len'],
+  data () {
+    return {
+      draw: null,
+      isMounted: false
+    }
+  },
   methods: {
-    createRuler (draw) {
+    createRuler () {
+      var draw = this.draw
+      draw.clear()
       var lineAttr = {
         'stroke-width': 1,
         'shape-rendering': 'crispEdges'
@@ -23,7 +31,7 @@ export default {
           x1: 19,
           y1: 0,
           x2: 19,
-          y2: '100%'
+          y2: len
         })
         for (let i = 29; i < len; i = i + 10) {
           count++
@@ -44,7 +52,7 @@ export default {
         ruler.attr({
           x1: 0,
           y1: 19,
-          x2: '100%',
+          x2: len,
           y2: 19
         })
         for (let i = 29; i < len; i = i + 10) {
@@ -66,7 +74,8 @@ export default {
       var path = draw.path(pathStr)
       path.attr(lineAttr)
     },
-    createCursor (draw) {
+    createCursor () {
+      var draw = this.draw
       if (!this.vertical) {
         let cursor = draw.polygon('15,20 25,20 20,15')
         cursor.fill('#000').addClass('x-ruler')
@@ -77,14 +86,15 @@ export default {
     }
   },
   mounted () {
-    var id = this.id
-    var draw = SVG(id)
-    this.createRuler(draw)
-    this.createCursor(draw)
+    var draw = SVG(this.id)
+    this.draw = draw
+    this.isMounted = true
+    this.createRuler()
+    this.createCursor()
     let self = this
     Bus.$on('updateCursor', function (point) {
       if (!self.vertical) {
-        let cursor = (draw.select('polygon.x-ruler')).members[0]
+        let cursor = (self.draw.select('polygon.x-ruler')).members[0]
         let points = [
           [point.x + 15, 19],
           [point.x + 25, 19],
@@ -92,7 +102,7 @@ export default {
         ]
         cursor.plot(points)
       } else {
-        let cursor = (draw.select('polygon.y-ruler')).members[0]
+        let cursor = (self.draw.select('polygon.y-ruler')).members[0]
         let points = [
           [19, point.y - 26],
           [19, point.y - 16],
@@ -101,6 +111,17 @@ export default {
         cursor.plot(points)
       }
     })
+  },
+  watch: {
+    len: {
+      immediate: true,
+      handler (val) {
+        if (!this.isMounted) return
+        console.log(val)
+        this.createRuler()
+        this.createCursor()
+      }
+    }
   }
 }
 </script>

@@ -1,3 +1,4 @@
+import Vue from 'vue'
 export default {
   /**
    * 获取元素类型
@@ -36,6 +37,8 @@ export default {
       case 'g':
         attrs = this.getGroupAttrs(shape)
         break
+      default:
+        attrs = []
     }
     return attrs
   },
@@ -112,16 +115,16 @@ export default {
     }
   },
   getLeft (shape, desc = '左边') {
-    return this.createAttr('left', desc, shape.bbox().x, this.setLeft)
+    return this.createAttr('left', desc, shape.x(), this.setLeft)
   },
   getTop (shape, desc = '上边') {
-    return this.createAttr('top', desc, shape.bbox().y, this.setTop)
+    return this.createAttr('top', desc, shape.y(), this.setTop)
   },
   getWidth (shape, desc = '宽度') {
-    return this.createAttr('width', desc, shape.bbox().width, this.setWidth)
+    return this.createAttr('width', desc, shape.width(), this.setWidth)
   },
   getHeight (shape, desc = '高度') {
-    return this.createAttr('height', desc, shape.bbox().height, this.setHeight)
+    return this.createAttr('height', desc, shape.height(), this.setHeight)
   },
   getAngle (shape, desc = '旋转角度') {
     return this.createAttr('angle', desc, shape.transform('rotation'), this.setAngle)
@@ -215,5 +218,48 @@ export default {
     if (!isNaN(parseFloat(val))) {
       shapes.forEach(shape => shape.radius(2 * parseFloat(val)))
     }
+  },
+  getSvgAttrs (svg) {
+    return [this.getSvgWidth(svg), this.getSvgHeight(svg), this.getSvgBackGround(svg), this.getSvgGridShow(svg), this.getSvgGridColor(svg)]
+  },
+  getSvgWidth (svg) {
+    var width = svg.vue.$parent.$data.workWidth
+    return this.createAttr('width', '宽度', width, this.setSvgWidth)
+  },
+  setSvgWidth (svg, width) {
+    let vm = svg.vue.$parent
+    Vue.set(vm, 'workWidth', width)
+  },
+  getSvgHeight (svg) {
+    var height = svg.vue.$parent.$data.workHeight
+    return this.createAttr('height', '高度', height, this.setSvgHeight)
+  },
+  setSvgHeight (svg, height) {
+    let vm = svg.vue.$parent
+    Vue.set(vm, 'workHeight', height)
+  },
+  getSvgBackGround (svg) {
+    var background = svg.vue.$parent.$data.gridBackGroundColor
+    return this.createAttr('background', '背景色', background, this.setSvgBackGround)
+  },
+  setSvgBackGround (svg, color) {
+    let vm = svg.vue.$parent
+    Vue.set(vm, 'gridBackGroundColor', color)
+  },
+  getSvgGridColor (svg) {
+    var gridColor = svg.vue.$parent.$data.gridColor
+    return this.createAttr('gridColor', '网格颜色', gridColor, this.setSvgGridColor)
+  },
+  setSvgGridColor (svg, color) {
+    let vm = svg.vue.$parent
+    Vue.set(vm, 'gridColor', color)
+  },
+  getSvgGridShow (svg) {
+    var gridShow = svg.vue.$parent.$data.gridShow
+    return this.createAttr('gridShow', '网格', gridShow, this.setSvgGridColor)
+  },
+  setSvgGridShow (svg, show) {
+    let vm = svg.vue.$parent
+    Vue.set(vm, 'gridShow', show)
   }
 }

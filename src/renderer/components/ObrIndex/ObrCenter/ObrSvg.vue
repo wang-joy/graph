@@ -11,7 +11,7 @@ export default {
   mounted () {
     var svgId = this.id
     var tabName = this.tabName
-    var svg = svgManager.createSVG(svgId, tabName)
+    var svg = svgManager.createSVG(svgId, tabName, this)
     var draw = svg.draw
     draw.on('mousemove', function (e) {
       var point = this.point(e.screenX, e.screenY)

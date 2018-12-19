@@ -8,7 +8,8 @@
           :size="btnSize"
           class="btn"
           v-for="(btn, i) in btnGroup.btns"
-          :key="index + '_' + i" 
+          :key="index + '_' + i"
+          :disabled="btn.disabled" 
           :title="btn.title" >
             <ObrIcon :type="btn.icon"></ObrIcon>
           </el-button>
@@ -29,7 +30,8 @@ export default {
             {
               title: '新建文件',
               click: 'createFile',
-              icon: 'xinjian'
+              icon: 'xinjian',
+              disabled: true
             },
             {
               title: '打开文件',

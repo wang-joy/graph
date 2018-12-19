@@ -6,8 +6,9 @@ import SelectorManager from './selector/SelectorManager'
 import ShapeManager from './shape/ShapeManager'
 import shapeUtils from './shape/utils'
 import CommandManager from './command/CommandManager'
+import Bus from '@/bus/Bus'
 class Svg {
-  constructor (id, tabName) {
+  constructor (id, tabName, vue) {
     this.draw = SVG(id).size('100%', '100%')
     this.id = id
     this.tabName = tabName
@@ -17,8 +18,11 @@ class Svg {
     this.selectorManager = selectorManager
     this.shapeManager = shapeManager
     this.commandManager = commandManager
+    this.vue = vue
+    let that = this
     this.draw.on('mousedown.clearSelect', function () {
       selectorManager.clearSelect()
+      Bus.$emit('selectSvg', that)
     })
     this.draw.on('mousedown.multiSelect', function (e) {
       if (e.button === 2) {
