@@ -102,8 +102,10 @@ SelectHandler.prototype.init = function (value, options) {
 
   this.parent = this.el.parent()
   this.nested = (this.nested || this.parent.group())
-
-  this.nested.matrix(new SVG.Matrix(this.el).translate(bbox.x, bbox.y))
+  var scaleX = this.el.transform('scaleX')
+  var scaleY = this.el.transform('scaleY')
+  var m = new SVG.Matrix(this.el).translate(bbox.x, bbox.y)
+  this.nested.matrix(m.scale(1/scaleX, 1/scaleY))
 
   // When deepSelect is enabled and the element is a line/polyline/polygon, draw only points for moving
   if (this.options.deepSelect && ['line', 'polyline', 'polygon'].indexOf(this.el.type) !== -1) {
@@ -269,7 +271,11 @@ SelectHandler.prototype.plotLine = function (line, point, pos) {
 SelectHandler.prototype.updateRectSelection = function () {
   var _this = this
   var bbox = this.el.bbox()
-
+  var _this = this, bbox = this.el.bbox();
+  var scaleX = this.el.transform('scaleX')
+  var scaleY = this.el.transform('scaleY')
+  bbox.width = Math.abs(scaleX)*bbox.width
+  bbox.height = Math.abs(scaleY)*bbox.height
   this.rectSelection.set.get(0).attr({
     width: bbox.width,
     height: bbox.height
@@ -355,8 +361,11 @@ SelectHandler.prototype.selectRect = function (value) {
 
 SelectHandler.prototype.handler = function () {
   var bbox = this.el.bbox()
-  this.nested.matrix(new SVG.Matrix(this.el).translate(bbox.x, bbox.y))
-
+  //this.nested.matrix(new SVG.Matrix(this.el).translate(bbox.x, bbox.y))
+  var scaleX = this.el.transform('scaleX')
+  var scaleY = this.el.transform('scaleY')
+  var m = new SVG.Matrix(this.el).translate(bbox.x, bbox.y)
+  this.nested.matrix(m.scale(1/scaleX, 1/scaleY))
   if (this.rectSelection.isSelected) {
     this.updateRectSelection()
   }

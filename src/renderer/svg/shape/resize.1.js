@@ -79,8 +79,7 @@ ResizeHandler.prototype.resize = function (event) {
 
   this.m = this.el.node.getScreenCTM().inverse()
   this.offset = { x: window.pageXOffset, y: window.pageYOffset }
-  var scaleX = this.el.transform().scaleX
-  var scaleY = this.el.transform().scaleY
+
   var txPt = this._extractPosition(event.detail.event)
   this.parameters = {
     type: this.el.type, // the type of element
@@ -88,9 +87,7 @@ ResizeHandler.prototype.resize = function (event) {
     x: event.detail.x, // x-position of the mouse when resizing started
     y: event.detail.y, // y-position of the mouse when resizing started
     box: this.el.bbox(), // The bounding-box of the element
-    rotation: this.el.transform().rotation, // The current rotation of the element
-    scaleX: scaleX,
-    scaleY: scaleY
+    rotation: this.el.transform().rotation// The current rotation of the element
   }
 
   // Add font-size parameter if the element type is text
@@ -143,7 +140,24 @@ ResizeHandler.prototype.resize = function (event) {
 
           snap = this.checkAspectRatio(snap)
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX - snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY - snap[1] / this.parameters.box.height * scaleY, this.parameters.box.x2, this.parameters.box.y2)
+            // var el = this.el
+            // var x = this.parameters.box.x2
+            // var y = this.parameters.box.y2
+            // var box = this.el.bbox()
+            // var dScaleX = diffX / box.width
+            // var dScaleY = diffY / box.height
+            // var rotation = el.transform('rotation')
+            // el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            // var translateX = el.transform('x')
+            // var translateY = el.transform('y')
+            // el.untransform().scale(1 - dScaleX, 1 - dScaleY, x, y)
+            // var pm = new SVG.Matrix(el)
+            // this.el.each(function () {
+            //   var m = new SVG.Matrix(this)
+            //   this.untransform().transform(pm.multiply(m))
+            // })
+            // this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
+            this.el.scale(this.parameters.box.width - snap[0], this.parameters.box.height - snap[1])
           } else {
             this.el.move(this.parameters.box.x + snap[0], this.parameters.box.y + snap[1]).size(this.parameters.box.width - snap[0], this.parameters.box.height - snap[1])
           }
@@ -165,7 +179,23 @@ ResizeHandler.prototype.resize = function (event) {
 
           snap = this.checkAspectRatio(snap, true)
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX + snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY - snap[1] / this.parameters.box.height * scaleY, this.parameters.box.x, this.parameters.box.y2)
+            var el = this.el
+            var x = this.parameters.box.x
+            var y = this.parameters.box.y2
+            var box = this.el.bbox()
+            var dScaleX = diffX / box.width
+            var dScaleY = diffY / box.height
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1 + dScaleX, 1 - dScaleY, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y + snap[1]).size(this.parameters.box.width + snap[0], this.parameters.box.height - snap[1])
           }
@@ -187,7 +217,23 @@ ResizeHandler.prototype.resize = function (event) {
 
           snap = this.checkAspectRatio(snap)
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX + snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY + snap[1] / this.parameters.box.height * scaleY, this.parameters.box.x, this.parameters.box.y2)
+            var el = this.el
+            var x = this.parameters.box.x
+            var y = this.parameters.box.y
+            var box = this.el.bbox()
+            var dScaleX = diffX / box.width
+            var dScaleY = diffY / box.height
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1 + dScaleX, 1 + dScaleY, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y).size(this.parameters.box.width + snap[0], this.parameters.box.height + snap[1])
           }
@@ -209,7 +255,23 @@ ResizeHandler.prototype.resize = function (event) {
 
           snap = this.checkAspectRatio(snap, true)
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX - snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY + snap[1] / this.parameters.box.height * scaleY, this.parameters.box.x2, this.parameters.box.y)
+            var el = this.el
+            var x = this.parameters.box.x2
+            var y = this.parameters.box.y
+            var box = this.el.bbox()
+            var dScaleX = diffX / box.width
+            var dScaleY = diffY / box.height
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1 - dScaleX, 1 + dScaleY, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x + snap[0], this.parameters.box.y).size(this.parameters.box.width - snap[0], this.parameters.box.height + snap[1])
           }
@@ -228,7 +290,22 @@ ResizeHandler.prototype.resize = function (event) {
             return
           }
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX, this.parameters.scaleY - snap[1] / this.parameters.box.height * scaleY, this.parameters.box.x2, this.parameters.box.y2)
+            var el = this.el
+            var x = this.parameters.box.x2
+            var y = this.parameters.box.y2
+            var box = this.el.bbox()
+            var dScaleY = diffY / box.height
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1, 1 - dScaleY, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y + snap[1]).height(this.parameters.box.height - snap[1])
           }
@@ -246,7 +323,22 @@ ResizeHandler.prototype.resize = function (event) {
             return
           }
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX + snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY, this.parameters.box.x, this.parameters.box.y)
+            var el = this.el
+            var x = this.parameters.box.x
+            var y = this.parameters.box.y
+            var box = this.el.bbox()
+            var dScaleX = diffX / box.width
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1 + dScaleX, 1, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y).width(this.parameters.box.width + snap[0])
           }
@@ -264,7 +356,22 @@ ResizeHandler.prototype.resize = function (event) {
             return
           }
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX, this.parameters.scaleY + snap[1] / this.parameters.box.width * this.parameters.scaleY, this.parameters.box.x, this.parameters.box.y)
+            var el = this.el
+            var x = this.parameters.box.x
+            var y = this.parameters.box.y
+            var box = this.el.bbox()
+            var dScaleY = diffY / box.height
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1, 1 + dScaleY, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y).height(this.parameters.box.height + snap[1])
           }
@@ -282,7 +389,22 @@ ResizeHandler.prototype.resize = function (event) {
             return
           }
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX - snap[0] / this.parameters.box.width * this.parameters.scaleX, this.parameters.scaleY, this.parameters.box.x2, this.parameters.box.y2)
+            var el = this.el
+            var x = this.parameters.box.x2
+            var y = this.parameters.box.y2
+            var box = this.el.bbox()
+            var dScaleX = diffX / box.width
+            var rotation = el.transform('rotation')
+            el.transform({rotation: -rotation, cx: box.cx, cy: box.cy}, true)
+            var translateX = el.transform('x')
+            var translateY = el.transform('y')
+            el.untransform().scale(1 - dScaleX, 1, x, y)
+            var pm = new SVG.Matrix(el)
+            this.el.each(function () {
+              var m = new SVG.Matrix(this)
+              this.untransform().transform(pm.multiply(m))
+            })
+            this.el.scale(1, 1, x, y).translate(translateX, translateY).rotate(rotation, box.cx, box.cy)
           } else {
             this.el.move(this.parameters.box.x + snap[0], this.parameters.box.y).width(this.parameters.box.width - snap[0])
           }
@@ -300,7 +422,7 @@ ResizeHandler.prototype.resize = function (event) {
           let sAngle = Math.atan2((this.parameters.p.y - this.el.bbox().y - this.el.bbox().height / 2), (this.parameters.p.x - this.el.bbox().x - this.el.bbox().width / 2))
           let pAngle = Math.atan2((current.y - this.el.bbox().y - this.el.bbox().height / 2), (current.x - this.parameters.box.x - this.parameters.box.width / 2))
           let angle = (pAngle - sAngle) * 180 / Math.PI
-          this.el.transform({rotation: angle})
+          this.el.transform({rotation: angle}, true)
         } else {
           // start minus middle
           let sAngle = Math.atan2((this.parameters.p.y - this.parameters.box.y - this.parameters.box.height / 2), (this.parameters.p.x - this.parameters.box.x - this.parameters.box.width / 2))
@@ -416,6 +538,9 @@ ResizeHandler.prototype.update = function (event) {
 
   // Calculate the new position and height / width of the element
   this.calc(diffX, diffY)
+  if (this.parameters.type === 'g') {
+    this.parameters.p = p
+  }
   // Emit an event to say we have changed.
   this.el.fire('resizing', {dx: diffX, dy: diffY, event: event})
 }

@@ -104,7 +104,7 @@ export default {
   },
   // 获取组合相关的属性
   getGroupAttrs (shape) {
-    return [this.getLeft(shape), this.getTop(shape), this.getAngle(shape)]
+    return [this.getLeft(shape), this.getTop(shape), this.getAngle(shape), this.getWidth(shape)]
   },
   createAttr (title, desc, val, setter) {
     return {
@@ -261,5 +261,7 @@ export default {
   setSvgGridShow (svg, show) {
     let vm = svg.vue.$parent
     Vue.set(vm, 'gridShow', show)
+  },
+  getGroupLeft (g) {
   }
 }

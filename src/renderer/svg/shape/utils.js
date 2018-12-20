@@ -214,7 +214,7 @@ export default {
     var shapeManager = svg.shapeManager
     shapes.forEach(shape => {
       g.add(shape)
-      shape.remember('_m', new SVG.Matrix(shape))
+      // shape.remember('_m', new SVG.Matrix(shape))
       shape.off('mousedown')
       shapeManager.remove(shape, true)
     })
@@ -227,8 +227,8 @@ export default {
     var children = []
     g.each(function () {
       var shape = this
-      var m = shape.remember('_m')
-      shape.transform(m).draggable().on('mousedown', shapeEvts.mousedown)
+      // var m = shape.remember('_m')
+      shape.draggable().on('mousedown', shapeEvts.mousedown)
       shapeManager.push(shape)
       children.push(shape)
     })

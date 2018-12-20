@@ -32,18 +32,19 @@ export default {
       } else {
         gridRect.hide()
       }
-      return gridRect
+      this.gridRect = gridRect
     }
   },
   mounted () {
     var id = this.id
     var draw = SVG(id)
-    this.gridRect = this.createGrid(draw)
+    this.createGrid(draw)
     this.draw = draw
     this.isMounted = true
   },
   watch: {
     gridShow: {
+      immediate: true,
       handler () {
         if (!this.isMounted) return
         if (this.gridShow) {
