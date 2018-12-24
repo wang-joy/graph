@@ -142,71 +142,77 @@ export default {
     var minAndMaxPoint = this.getMinAndMaxPoint(shapes, draw)
     shapes.forEach(shape => {
       var p = this.getMovePoint(shape, type, minAndMaxPoint, draw)
-      shape.move(p.x, p.y)
+      if (shape.attr('type') === 'g' || shape instanceof SVG.G) {
+        shape.transform({x: p.gx, y: p.gy}, true)
+      } else {
+        shape.move(p.x, p.y)
+      }
     })
   },
   getMinAndMaxPoint (shapes, draw) {
-    var minX, minY, maxX, maxY
+    var minX = Infinity
+    var minY = Infinity
+    var maxX = -Infinity
+    var maxY = -Infinity
     shapes.forEach(shape => {
       var box = shape.rbox()
-      var p1 = draw.point(box.x, box.y)
-      var p2 = draw.point(box.x2, box.y2)
-      if (typeof minX === 'undefined') {
+      var scrollLeft = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft
+      var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+      var p1 = {x: box.x - scrollLeft, y: box.y - scrollTop}
+      var p2 = {x: box.x2 - scrollLeft, y: box.y2 - scrollTop}
+      if (minX > p1.x) {
         minX = p1.x
-        minY = p1.y
+      }
+      if (maxX < p2.x) {
         maxX = p2.x
+      }
+      if (minY > p1.y) {
+        minY = p1.y
+      }
+      if (maxY < p2.y) {
         maxY = p2.y
-      } else {
-        if (minX > p1.x) {
-          minX = p1.x
-        }
-        if (maxX < p2.x) {
-          maxX = p2.x
-        }
-        if (minY > p1.y) {
-          minY = p1.y
-        }
-        if (maxY < p2.y) {
-          maxY = p2.y
-        }
       }
     })
     return {minX: minX, minY: minY, maxX: maxX, maxY: maxY}
   },
   getMovePoint (shape, type, minAndMaxPoint, draw) {
     var bbox = this.getBox(shape)
+    var scrollLeft = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft
+    var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
     var rbox = shape.rbox()
-    var m = new SVG.Matrix(shape)
-    var p = this.transformPoint(bbox.x, bbox.y, m)
-    var point = null
-    var p1 = null
+    var m = shape.node.getScreenCTM().inverse()
     switch (type) {
-      case 'top':
-        p1 = draw.point(rbox.x, rbox.y)
-        point = this.transformPoint(p.x, p.y + minAndMaxPoint.minY - p1.y, m.inverse())
-        break
-      case 'left':
-        p1 = draw.point(rbox.x, rbox.y)
-        point = this.transformPoint(p.x + minAndMaxPoint.minX - p1.x, p.y, m.inverse())
-        break
-      case 'right':
-        p1 = draw.point(rbox.x2, rbox.y2)
-        point = this.transformPoint(p.x + minAndMaxPoint.maxX - p1.x, p.y, m.inverse())
-        break
-      case 'bottom':
-        p1 = draw.point(rbox.x2, rbox.y2)
-        point = this.transformPoint(p.x, p.y + minAndMaxPoint.maxY - p1.y, m.inverse())
-        break
-      case 'horizontal':
-        p1 = draw.point(rbox.cx, rbox.cy)
-        point = this.transformPoint(p.x, p.y + (minAndMaxPoint.minY + minAndMaxPoint.maxY) / 2 - p1.y, m.inverse())
-        break
-      case 'vertical':
-        p1 = draw.point(rbox.cx, rbox.cy)
-        point = this.transformPoint(p.x + (minAndMaxPoint.minX + minAndMaxPoint.maxX) / 2 - p1.x, p.y, m.inverse())
-        break
+      case 'top': {
+        let startPoint = this.transformPoint(rbox.x - scrollLeft, rbox.y - scrollTop, m)
+        let endPoint = this.transformPoint(rbox.x - scrollLeft, minAndMaxPoint.minY, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
+      case 'left': {
+        let startPoint = this.transformPoint(rbox.x - scrollLeft, rbox.y - scrollTop, m)
+        let endPoint = this.transformPoint(minAndMaxPoint.minX, rbox.y - scrollTop, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
+      case 'right': {
+        let startPoint = this.transformPoint(rbox.x2 - scrollLeft, rbox.y2 - scrollTop, m)
+        let endPoint = this.transformPoint(minAndMaxPoint.maxX, rbox.y2 - scrollTop, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
+      case 'bottom': {
+        let startPoint = this.transformPoint(rbox.x2 - scrollLeft, rbox.y2 - scrollTop, m)
+        let endPoint = this.transformPoint(rbox.x2 - scrollLeft, minAndMaxPoint.maxY, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
+      case 'horizontal': {
+        let startPoint = this.transformPoint(rbox.cx - scrollLeft, rbox.cy - scrollTop, m)
+        let endPoint = this.transformPoint(rbox.cx - scrollLeft, (minAndMaxPoint.minY + minAndMaxPoint.maxY) / 2, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
+      case 'vertical': {
+        let startPoint = this.transformPoint(rbox.cx - scrollLeft, rbox.cy - scrollTop, m)
+        let endPoint = this.transformPoint((minAndMaxPoint.minX + minAndMaxPoint.maxX) / 2, rbox.cy - scrollTop, m)
+        return {x: bbox.x + endPoint.x - startPoint.x, y: bbox.y + endPoint.y - startPoint.y, gx: endPoint.x - startPoint.x, gy: endPoint.y - startPoint.y}
+      }
     }
-    return point
   },
   group (shapes, svg) {
     var draw = svg.draw

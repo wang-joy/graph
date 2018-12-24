@@ -102,6 +102,7 @@ SelectHandler.prototype.init = function (value, options) {
 
   this.parent = this.el.parent()
   this.nested = (this.nested || this.parent.group())
+  console.log(this.nested)
   var scaleX = this.el.transform('scaleX')
   var scaleY = this.el.transform('scaleY')
   var m = new SVG.Matrix(this.el).translate(bbox.x, bbox.y)
@@ -300,7 +301,10 @@ SelectHandler.prototype.updateRectSelection = function () {
 SelectHandler.prototype.selectRect = function (value) {
   var _this = this
   var bbox = this.el.bbox()
-
+  var scaleX = this.el.transform('scaleX')
+  var scaleY = this.el.transform('scaleY')
+  bbox.width = Math.abs(scaleX)*bbox.width
+  bbox.height = Math.abs(scaleY)*bbox.height
   this.rectSelection.isSelected = value
 
   // when set is already p

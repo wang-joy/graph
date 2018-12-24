@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import SVG from 'svg.js'
+import ShapeUtils from '../utils'
 export default {
   /**
    * 获取元素类型
@@ -104,7 +106,7 @@ export default {
   },
   // 获取组合相关的属性
   getGroupAttrs (shape) {
-    return [this.getLeft(shape), this.getTop(shape), this.getAngle(shape), this.getWidth(shape)]
+    return [this.getLeft(shape), this.getTop(shape), this.getWidth(shape), this.getHeight(shape), this.getAngle(shape)]
   },
   createAttr (title, desc, val, setter) {
     return {
@@ -115,16 +117,24 @@ export default {
     }
   },
   getLeft (shape, desc = '左边') {
-    return this.createAttr('left', desc, shape.x(), this.setLeft)
+    return this.createAttr('left', desc, this._getP(shape).x, this.setLeft)
   },
   getTop (shape, desc = '上边') {
-    return this.createAttr('top', desc, shape.y(), this.setTop)
+    return this.createAttr('top', desc, this._getP(shape).y, this.setTop)
   },
   getWidth (shape, desc = '宽度') {
-    return this.createAttr('width', desc, shape.width(), this.setWidth)
+    var transform = shape.transform()
+    var box = shape.bbox()
+    var scaleX = transform.scaleX
+    var val = Math.abs(scaleX) * box.width
+    return this.createAttr('width', desc, val, this.setWidth)
   },
   getHeight (shape, desc = '高度') {
-    return this.createAttr('height', desc, shape.height(), this.setHeight)
+    var transform = shape.transform()
+    var box = shape.bbox()
+    var scaleY = transform.scaleY
+    var val = Math.abs(scaleY) * box.height
+    return this.createAttr('height', desc, val, this.setHeight)
   },
   getAngle (shape, desc = '旋转角度') {
     return this.createAttr('angle', desc, shape.transform('rotation'), this.setAngle)
@@ -161,27 +171,67 @@ export default {
   },
   setLeft (shapes, val) {
     if (!isNaN(parseFloat(val))) {
-      shapes.forEach(shape => shape.x(parseFloat(val)))
+      shapes.forEach(shape => {
+        let left = parseFloat(val)
+        let m = shape.doc().node.getScreenCTM()
+        let point = this._transformPoint(left, 0, m)
+        let p = ShapeUtils.getMovePoint(shape, 'left', {minX: point.x}, shape.doc())
+        if (shape.attr('type') === 'g' || shape instanceof SVG.G) {
+          shape.transform({x: p.gx, y: p.gy}, true)
+        } else {
+          shape.move(p.x, p.y)
+        }
+      })
     }
   },
   setTop (shapes, val) {
     if (!isNaN(parseFloat(val))) {
-      shapes.forEach(shape => shape.y(parseFloat(val)))
+      shapes.forEach(shape => {
+        let top = parseFloat(val)
+        let m = shape.doc().node.getScreenCTM()
+        let point = this._transformPoint(0, top, m)
+        let p = ShapeUtils.getMovePoint(shape, 'top', {minY: point.y}, shape.doc())
+        if (shape.attr('type') === 'g' || shape instanceof SVG.G) {
+          shape.transform({x: p.gx, y: p.gy}, true)
+        } else {
+          shape.move(p.x, p.y)
+        }
+      })
     }
   },
   setWidth (shapes, val) {
     if (!isNaN(parseFloat(val))) {
-      shapes.forEach(shape => shape.width(parseFloat(val)))
+      shapes.forEach(shape => {
+        if (shape.attr('type') === 'g' || shape instanceof SVG.G) {
+          let scaleX = parseFloat(val) / shape.bbox().width
+          let scaleY = shape.transform('scaleY')
+          shape.scale(scaleX, scaleY)
+        } else {
+          shape.width(parseFloat(val))
+        }
+      })
     }
   },
   setHeight (shapes, val) {
     if (!isNaN(parseFloat(val))) {
-      shapes.forEach(shape => shape.height(parseFloat(val)))
+      shapes.forEach(shape => {
+        if (shape.attr('type') === 'g' || shape instanceof SVG.G) {
+          let scaleX = shape.transform('scaleX')
+          let scaleY = parseFloat(val) / shape.bbox().height
+          shape.scale(scaleX, scaleY)
+        } else {
+          shape.height(parseFloat(val))
+        }
+      })
     }
   },
   setAngle (shapes, val) {
     if (!isNaN(parseFloat(val))) {
-      shapes.forEach(shape => shape.rotate(parseFloat(val)))
+      shapes.forEach(shape => {
+        let scaleX = shape.transform('scaleX')
+        let scaleY = shape.transform('scaleY')
+        shape.scale(1, 1).rotate(parseFloat(val)).scale(scaleX, scaleY)
+      })
     }
   },
   setRx (shapes, val) {
@@ -263,5 +313,22 @@ export default {
     Vue.set(vm, 'gridShow', show)
   },
   getGroupLeft (g) {
+    console.log(g.bbox())
+  },
+  _resetRotate (shape) {
+    var transform = shape.transform()
+    shape.transform(new SVG.Matrix()).scale(transform.scaleX, transform.scaleY)
+  },
+  _getP (shape) {
+    var m = shape.doc().node.getScreenCTM().inverse()
+    var p = shape.doc().node.createSVGPoint()
+    var scrollLeft = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft
+    var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+    p.x = shape.rbox().x - scrollLeft
+    p.y = shape.rbox().y - scrollTop
+    return p.matrixTransform(m)
+  },
+  _transformPoint (x, y, m) {
+    return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f}
   }
 }

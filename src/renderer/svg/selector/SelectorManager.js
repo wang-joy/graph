@@ -63,7 +63,11 @@ class SelectorManager {
           var newP = p.matrixTransform(matrix.inverse().native())
           var x = box.x + newP.x - newPoint.x
           var y = box.y + newP.y - newPoint.y
-          s.move(x, y)
+          if (s.attr('type') === 'g' || s instanceof SVG.G) {
+            s.transform({x: newP.x - newPoint.x, y: newP.y - newPoint.y}, true)
+          } else {
+            s.move(x, y)
+          }
         })
         point = p
       })

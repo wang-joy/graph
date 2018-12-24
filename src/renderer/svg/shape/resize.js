@@ -264,7 +264,7 @@ ResizeHandler.prototype.resize = function (event) {
             return
           }
           if (this.parameters.type === 'g') {
-            this.el.scale(this.parameters.scaleX, this.parameters.scaleY + snap[1] / this.parameters.box.width * this.parameters.scaleY, this.parameters.box.x, this.parameters.box.y)
+            this.el.scale(this.parameters.scaleX, this.parameters.scaleY + snap[1] / this.parameters.box.height * this.parameters.scaleY, this.parameters.box.x, this.parameters.box.y)
           } else {
             this.el.move(this.parameters.box.x, this.parameters.box.y).height(this.parameters.box.height + snap[1])
           }
@@ -296,19 +296,22 @@ ResizeHandler.prototype.resize = function (event) {
       this.calc = function (diffX, diffY) {
         // yes this is kinda stupid but we need the mouse coords back...
         var current = {x: diffX + this.parameters.p.x, y: diffY + this.parameters.p.y}
+        // start minus middle
+        let sAngle = Math.atan2((this.parameters.p.y - this.parameters.box.y - this.parameters.box.height / 2), (this.parameters.p.x - this.parameters.box.x - this.parameters.box.width / 2))
+
+        // end minus middle
+        let pAngle = Math.atan2((current.y - this.parameters.box.y - this.parameters.box.height / 2), (current.x - this.parameters.box.x - this.parameters.box.width / 2))
+
+        let angle = this.parameters.rotation + (pAngle - sAngle) * 180 / Math.PI + this.options.snapToAngle / 2
         if (this.parameters.type === 'g') {
-          let sAngle = Math.atan2((this.parameters.p.y - this.el.bbox().y - this.el.bbox().height / 2), (this.parameters.p.x - this.el.bbox().x - this.el.bbox().width / 2))
-          let pAngle = Math.atan2((current.y - this.el.bbox().y - this.el.bbox().height / 2), (current.x - this.parameters.box.x - this.parameters.box.width / 2))
-          let angle = (pAngle - sAngle) * 180 / Math.PI
-          this.el.transform({rotation: angle})
+          var scaleX = this.parameters.scaleX
+          var scaleY = this.parameters.scaleY
+          if (Math.abs(Math.abs(scaleX) - 1) < 0.000001 && Math.abs(Math.abs(scaleY) - 1) < 0.000001) {
+            this.el.rotate(angle)
+          } else {
+            this.el.scale(1, 1).rotate(angle).scale(scaleX, scaleY)
+          }
         } else {
-          // start minus middle
-          let sAngle = Math.atan2((this.parameters.p.y - this.parameters.box.y - this.parameters.box.height / 2), (this.parameters.p.x - this.parameters.box.x - this.parameters.box.width / 2))
-
-          // end minus middle
-          let pAngle = Math.atan2((current.y - this.parameters.box.y - this.parameters.box.height / 2), (current.x - this.parameters.box.x - this.parameters.box.width / 2))
-
-          let angle = this.parameters.rotation + (pAngle - sAngle) * 180 / Math.PI + this.options.snapToAngle / 2
           // We have to move the element to the center of the box first and change the rotation afterwards
           // because rotation always works around a rotation-center, which is changed when moving the element
           // We also set the new rotation center to the center of the box.
