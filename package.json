@@ -30,7 +30,10 @@
     "files": [
       "dist/electron/**/*"
     ],
-    "extraFiles":["libs", "imgs"],
+    "extraFiles": [
+      "libs",
+      "imgs"
+    ],
     "dmg": {
       "contents": [
         {
@@ -58,6 +61,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "electron-settings": "^3.2.0",
     "element-ui": "^2.4.5",
     "iscroll": "^5.2.0",
     "svg.draw.js": "^2.0.3",

@@ -12,7 +12,6 @@
       let win = this.$electron.remote.getCurrentWindow()
       let size = win.getContentSize()
       let that = this
-      console.log(size)
       that.$store.dispatch('winResize', size)
       window.onresize = function () {
         size = win.getContentSize()

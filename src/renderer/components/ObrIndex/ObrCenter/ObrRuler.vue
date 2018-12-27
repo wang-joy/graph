@@ -69,7 +69,7 @@ export default {
           for (let i = 22; i < len; i = i + 50) {
             add.tspan(i - 22).x(i)
           }
-        }).font('size', 12).y(3).font('weight', 'normal')
+        }).font('size', 12).font('weight', 'normal').y(3)
       }
       var path = draw.path(pathStr)
       path.attr(lineAttr)
@@ -117,7 +117,6 @@ export default {
       immediate: true,
       handler (val) {
         if (!this.isMounted) return
-        console.log(val)
         this.createRuler()
         this.createCursor()
       }

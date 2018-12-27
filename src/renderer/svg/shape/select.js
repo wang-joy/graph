@@ -102,7 +102,6 @@ SelectHandler.prototype.init = function (value, options) {
 
   this.parent = this.el.parent()
   this.nested = (this.nested || this.parent.group())
-  console.log(this.nested)
   var scaleX = this.el.transform('scaleX')
   var scaleY = this.el.transform('scaleY')
   var m = new SVG.Matrix(this.el).translate(bbox.x, bbox.y)

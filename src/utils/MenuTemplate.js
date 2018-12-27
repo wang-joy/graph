@@ -11,6 +11,14 @@ export var template = [
         }
       },
       {
+        label: '打开文件',
+        accelerator: 'CmdOrCtrl+O',
+        click: function (menuItem, window, event) {
+          let webContents = window.webContents
+          webContents.send('openFile')
+        }
+      },
+      {
         label: '保存文件',
         accelerator: 'CmdOrCtrl+S',
         click: function (menuItem, window, event) {
@@ -19,11 +27,11 @@ export var template = [
         }
       },
       {
-        label: '打开文件',
-        accelerator: 'CmdOrCtrl+O',
+        label: '另存为',
+        accelerator: 'CmdOrCtrl+Alt+S',
         click: function (menuItem, window, event) {
           let webContents = window.webContents
-          webContents.send('openFile')
+          webContents.send('saveAsFile')
         }
       }
     ]

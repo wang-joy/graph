@@ -36,6 +36,11 @@ class SvgManager {
     }
     Bus.$emit('setCurrentSVG', this.currentSVG)
   }
+  getSvgById (id) {
+    let svgs = this.svgs.filter((svg) => svg.id === id)
+    if (svgs.length === 0) return null
+    return svgs[0]
+  }
 }
 var svgManager = (function () {
   return new SvgManager()

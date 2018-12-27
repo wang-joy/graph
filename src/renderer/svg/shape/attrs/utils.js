@@ -167,7 +167,7 @@ export default {
     return this.createAttr('radius', desc, shape.attr('r'), this.setRadius)
   },
   getImgPath (shape, desc = '路径') {
-    return this.createAttr('path', desc, shape.attr('href'))
+    return this.createAttr('path', desc, shape.attr('href') || shape.attr('xlink:href'))
   },
   setLeft (shapes, val) {
     if (!isNaN(parseFloat(val))) {

@@ -161,6 +161,7 @@ export default {
       } else {
         this.label = ''
         this.shapes = []
+        this.attrs = []
       }
     },
     onSelectShapes (shapes) {
@@ -171,7 +172,9 @@ export default {
         } else if (shapes.length > 1) {
           this.label = 'shapes ( ' + shapes.length + '个 )'
         }
-        this.attrs = AttrUtils.getShapesAttrs(shapes)
+        setTimeout(() => {
+          this.attrs = AttrUtils.getShapesAttrs(shapes)
+        }, 5)
       }
     },
     onCreateShape (shape) {
